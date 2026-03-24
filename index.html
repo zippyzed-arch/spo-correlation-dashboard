@@ -192,6 +192,86 @@ a{color:#60a5fa;text-decoration:none}
       </div>
     </div>
   </div>
+
+  <!-- DAU vs DUU: Key Differences Summary -->
+  <div class="grid-1">
+    <div class="panel">
+      <h3>DAU vs DUU — What Each Metric Measures &amp; Key Differences</h3>
+
+      <table class="meth-table" style="margin-bottom:16px">
+        <thead>
+          <tr>
+            <th style="width:22%">Dimension</th>
+            <th style="color:#60a5fa">DAU</th>
+            <th style="color:#34d399">DUU</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>What it counts</td>
+            <td style="color:#94a3b8">Sessions / intentional actions — one user can contribute multiple DAU in a day</td>
+            <td style="color:#94a3b8">Distinct users — each person counted once, regardless of session count</td>
+          </tr>
+          <tr>
+            <td>Weekend behaviour</td>
+            <td style="color:#94a3b8"><span style="color:#fbbf24;font-weight:600">−45% drop</span> vs weekday. Enterprise workers go offline; DAU collapses sharply</td>
+            <td style="color:#94a3b8"><span style="color:#fbbf24;font-weight:600">Moderate drop.</span> Background sync, mobile, and consumer use keep DUU elevated</td>
+          </tr>
+          <tr>
+            <td>Enterprise signal</td>
+            <td style="color:#94a3b8">~40% of total volume. High activity-per-user ratio → strong work-schedule coupling</td>
+            <td style="color:#94a3b8">~73% of total DUU volume, but <span style="color:#f87171;font-weight:600">weakest predictor</span> for DB Cores (r = 0.28). SLA-provisioned farms decouple capacity from user counts</td>
+          </tr>
+          <tr>
+            <td>Consumer signal</td>
+            <td style="color:#94a3b8">Demand-driven; scales with actual usage</td>
+            <td style="color:#94a3b8">Only ~27% of DUU volume but <span style="color:#34d399;font-weight:600">nearly matches DAU</span> as a DB Cores predictor (r = 0.50 vs 0.52). Consumer capacity follows users, not contracts</td>
+          </tr>
+          <tr>
+            <td>Best use case</td>
+            <td style="color:#94a3b8">Capacity planning at <strong style="color:#e2e8f0">farm level</strong> — captures per-farm load intensity</td>
+            <td style="color:#94a3b8">Reach / unique user growth analysis. Consumer DUU is a good demand proxy; Enterprise DUU is not</td>
+          </tr>
+          <tr>
+            <td>Granularity available</td>
+            <td style="color:#94a3b8">Farm × segment (SPO_DAUSegmentedByFarmAndCustomerType) — enables farm-level correlation</td>
+            <td style="color:#94a3b8">Global Consumer / Enterprise only (SPO_DUUSegmented) — date-level comparison only</td>
+          </tr>
+          <tr>
+            <td>Correlation with each other</td>
+            <td colspan="2" style="color:#34d399;font-weight:600">r = 0.98 — near-perfect tracking over 415 days. DAU ≈ DUU × 7.3% (weekdays) / 4.0% (weekends)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
+        <div class="card c-amber">
+          <div class="label">Weekend ratio drop</div>
+          <div class="value" style="color:#fbbf24">−45%</div>
+          <div class="sub">DAU: 7.3% → 4.0% of DUU<br>DAU is sharper work-schedule signal</div>
+        </div>
+        <div class="card c-rose">
+          <div class="label">Enterprise DUU vs DAU predictor</div>
+          <div class="value" style="color:#f87171">r 0.28 vs 0.22</div>
+          <div class="sub">Both weak — SLA provisioning dominates<br>73% of DUU volume, worst predictor</div>
+        </div>
+        <div class="card c-green">
+          <div class="label">Consumer DUU predictor</div>
+          <div class="value" style="color:#34d399">r = 0.50</div>
+          <div class="sub">27% of DUU volume, near-best signal<br>Demand-driven ≈ farm-level DAU (0.52)</div>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:14px">
+        <strong>Bottom line:</strong> DAU and DUU move almost identically at the aggregate level (r = 0.98), but they diverge in two critical ways.
+        First, <span class="warn">DAU is far more sensitive to weekends and holidays</span> — it is the better signal for enterprise work activity.
+        Second, <span class="hi">Consumer DUU is a surprisingly strong capacity predictor</span> (r = 0.50) despite being only 27% of DUU volume,
+        because Consumer farm provisioning actually follows demand. Enterprise DUU — despite dominating volume — adds almost no predictive value for DB Cores,
+        since those farms are sized by SLA commitments, not user counts.
+        For capacity planning, prefer <strong style="color:#60a5fa">farm-level DAU</strong>; for user-reach analysis, track <strong style="color:#34d399">Consumer DUU separately from Enterprise DUU</strong>.
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════════ -->
