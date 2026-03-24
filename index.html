@@ -3,682 +3,750 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPO Correlation Analysis Dashboard</title>
+<title>SPO Correlation Analysis</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0f1117; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; }
-  .page { max-width: 1400px; margin: 0 auto; padding: 24px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1117;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px}
+a{color:#60a5fa;text-decoration:none}
 
-  /* Header */
-  .header { margin-bottom: 28px; }
-  .header h1 { font-size: 1.7rem; font-weight: 700; color: #f1f5f9; }
-  .header p { color: #94a3b8; margin-top: 4px; font-size: 0.875rem; }
-  .header .badge { display: inline-block; background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 2px 10px; font-size: 0.75rem; color: #64748b; margin-top: 8px; }
+/* Layout */
+.page{max-width:1440px;margin:0 auto;padding:24px 28px}
 
-  /* Cards */
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 28px; }
-  .card { background: #1a1d27; border: 1px solid #1e293b; border-radius: 10px; padding: 16px 18px; }
-  .card .label { font-size: 0.72rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .card .value { font-size: 1.6rem; font-weight: 700; }
-  .card .sub { font-size: 0.75rem; color: #94a3b8; margin-top: 4px; }
-  .card.green .value { color: #34d399; }
-  .card.blue .value  { color: #60a5fa; }
-  .card.amber .value { color: #fbbf24; }
-  .card.purple .value{ color: #a78bfa; }
-  .card.teal .value  { color: #2dd4bf; }
-  .card.rose .value  { color: #fb7185; }
+/* Header */
+.header{margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid #1e293b}
+.header h1{font-size:1.6rem;font-weight:700;color:#f1f5f9;letter-spacing:-0.02em}
+.header p{color:#64748b;margin-top:5px;font-size:0.83rem}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{background:#1e293b;border:1px solid #334155;border-radius:6px;padding:3px 10px;font-size:0.72rem;color:#64748b}
 
-  /* Section */
-  .section-title { font-size: 1rem; font-weight: 600; color: #cbd5e1; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #1e293b; }
+/* Nav */
+.nav{display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap}
+.nav a{background:#1a1d27;border:1px solid #1e293b;border-radius:6px;padding:6px 14px;font-size:0.78rem;color:#94a3b8;transition:all .15s}
+.nav a:hover{background:#1e293b;color:#e2e8f0;border-color:#334155}
 
-  /* Charts grid */
-  .charts-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 28px; }
-  .charts-1col { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 28px; }
-  .chart-panel { background: #1a1d27; border: 1px solid #1e293b; border-radius: 10px; padding: 18px; }
-  .chart-panel h3 { font-size: 0.85rem; font-weight: 600; color: #94a3b8; margin-bottom: 14px; }
-  .chart-panel canvas { width: 100% !important; }
+/* Section */
+.section{margin-bottom:40px}
+.section-header{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1e293b}
+.section-header h2{font-size:1rem;font-weight:600;color:#f1f5f9}
+.section-header .section-num{font-size:0.7rem;font-weight:700;background:#1e40af;color:#93c5fd;padding:2px 7px;border-radius:4px}
+.section-header .r-tag{font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:9999px}
+.r-high{background:#052e16;color:#34d399}
+.r-mid {background:#422006;color:#fbbf24}
+.r-low {background:#1a0a0a;color:#f87171}
 
-  /* Insight box */
-  .insight { background: #161b2e; border-left: 3px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 10px; font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
-  .insight strong { color: #e2e8f0; }
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:20px}
+.card{background:#1a1d27;border:1px solid #1e293b;border-radius:10px;padding:15px 16px}
+.card .label{font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.card .value{font-size:1.5rem;font-weight:700;line-height:1}
+.card .sub{font-size:0.72rem;color:#64748b;margin-top:5px;line-height:1.4}
+.c-green .value{color:#34d399}
+.c-blue  .value{color:#60a5fa}
+.c-amber .value{color:#fbbf24}
+.c-purple.value{color:#a78bfa}
+.c-teal  .value{color:#2dd4bf}
+.c-rose  .value{color:#fb7185}
+.c-green{border-color:#052e16}
+.c-blue {border-color:#1e3a5f}
+.c-amber{border-color:#3d2200}
+.c-rose {border-color:#3d0a0a}
 
-  /* Correlation badge */
-  .r-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; margin-left: 6px; }
-  .r-very-strong { background: #052e16; color: #34d399; }
-  .r-strong       { background: #1a2e05; color: #86efac; }
-  .r-moderate     { background: #451a03; color: #fbbf24; }
+/* Chart panels */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-1{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px}
+.panel{background:#1a1d27;border:1px solid #1e293b;border-radius:10px;padding:18px 20px}
+.panel h3{font-size:0.8rem;font-weight:600;color:#94a3b8;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel canvas{width:100%!important}
 
-  @media (max-width: 900px) {
-    .charts-2col { grid-template-columns: 1fr; }
-  }
+/* Insight */
+.insight{background:#0f172a;border-left:3px solid #334155;border-radius:0 6px 6px 0;padding:9px 13px;margin-top:12px;font-size:0.76rem;color:#64748b;line-height:1.55}
+.insight strong{color:#cbd5e1}
+.insight .hi{color:#34d399;font-weight:600}
+.insight .warn{color:#fbbf24;font-weight:600}
+
+/* Methodology table */
+.meth-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+.meth-table th{padding:9px 12px;text-align:left;color:#64748b;font-weight:500;border-bottom:1px solid #334155;font-size:0.72rem;text-transform:uppercase;letter-spacing:.05em}
+.meth-table td{padding:8px 12px;border-bottom:1px solid #1e293b;color:#94a3b8}
+.meth-table td:first-child{color:#e2e8f0}
+.meth-table tr:last-child td{border-bottom:none}
+.meth-table tr:hover td{background:#161b2e}
+.pill{display:inline-block;padding:2px 8px;border-radius:9999px;font-size:0.7rem;font-weight:700}
+
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.cards{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}}
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- Header -->
-  <div class="header">
-    <h1>SPO Correlation Analysis Dashboard</h1>
-    <p>SharePoint Online — DAU/DUU engagement patterns and storage capacity signal analysis</p>
-    <span class="badge">Data: Jan 2025 – Mar 2026 &nbsp;·&nbsp; 415 daily obs &nbsp;·&nbsp; 636 farms &nbsp;·&nbsp; Generated 2026-03-19</span>
+<!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <h1>SPO Correlation Analysis</h1>
+  <p>SharePoint Online · Engagement signals, capacity predictors, and storage drivers · Jan 2025 – Mar 2026</p>
+  <div class="badges">
+    <span class="badge">415 daily observations</span>
+    <span class="badge">636 farms</span>
+    <span class="badge">7 tables · user-cap-forecast</span>
+    <span class="badge">Updated 2026-03-24</span>
+    <span class="badge"><a href="https://github.com/zippyzed-arch/spo-correlation-dashboard">GitHub ↗</a></span>
   </div>
+</div>
 
-  <!-- Summary Cards -->
-  <div class="section-title">Key Findings</div>
+<!-- ── NAV ────────────────────────────────────────────────────────────────── -->
+<div class="nav">
+  <a href="#s1">① DAU vs DUU</a>
+  <a href="#s2">② User Signals → DB Cores</a>
+  <a href="#s3">③ File Count → DB Storage</a>
+  <a href="#s4">④ File Count → User Storage</a>
+  <a href="#findings">Key Findings</a>
+  <a href="#methodology">Methodology</a>
+</div>
+
+<!-- ── KEY FINDINGS ───────────────────────────────────────────────────────── -->
+<div class="section" id="findings">
+  <div class="section-header"><h2>Key Findings</h2></div>
   <div class="cards">
-    <div class="card green">
-      <div class="label">DUU ↔ DAU Correlation</div>
-      <div class="value">r = 0.98</div>
-      <div class="sub">Extremely strong · R² = 96%</div>
+    <div class="card c-green">
+      <div class="label">DAU ↔ DUU</div>
+      <div class="value c-green">r = 0.98</div>
+      <div class="sub">Extremely strong · R² = 96% · 415 days<br>Weekday ratio ~7.3% · Weekend ~4.0%</div>
     </div>
-    <div class="card blue">
+    <div class="card c-blue">
+      <div class="label">Best → DB Cores predictor</div>
+      <div class="value c-blue">r = 0.52</div>
+      <div class="sub">All-segment DAU at farm level<br>Consumer DUU close behind at 0.50</div>
+    </div>
+    <div class="card c-rose">
+      <div class="label">Enterprise → DB Cores</div>
+      <div class="value c-rose">r = 0.22</div>
+      <div class="sub">Weakest segment · SLA-driven provisioning<br>Government r = −0.10 (negative)</div>
+    </div>
+    <div class="card c-amber">
+      <div class="label">Scale efficiency gain</div>
+      <div class="value c-amber">−55%</div>
+      <div class="sub">Cores/M DAU: Q1→Q5 farms<br>Sub-linear scaling across all segments</div>
+    </div>
+    <div class="card c-green">
       <div class="label">Files → User Storage</div>
-      <div class="value">r = 0.93</div>
-      <div class="sub">Very strong · R² = 87%</div>
+      <div class="value c-green">r = 0.93</div>
+      <div class="sub">Very strong · R² = 87% · 636 farms<br>Best single storage predictor</div>
     </div>
-    <div class="card teal">
+    <div class="card c-blue">
       <div class="label">Files → DB Storage</div>
-      <div class="value">r = 0.87</div>
-      <div class="sub">Strong · R² = 76%</div>
-    </div>
-    <div class="card amber">
-      <div class="label">Weekday DAU/DUU Ratio</div>
-      <div class="value">~7.3%</div>
-      <div class="sub">Active engagement of unique visitors</div>
-    </div>
-    <div class="card purple">
-      <div class="label">Weekend DAU/DUU Ratio</div>
-      <div class="value">~4.0%</div>
-      <div class="sub">−45% vs weekday · consistent pattern</div>
-    </div>
-    <div class="card rose">
-      <div class="label">Best Storage Predictor</div>
-      <div class="value">File Count</div>
-      <div class="sub">Beats DAU for storage forecasting</div>
+      <div class="value c-blue">r = 0.87</div>
+      <div class="sub">Strong · R² = 76% · 636 farms<br>Weaker due to metadata overhead</div>
     </div>
   </div>
+</div>
 
-  <!-- DAU vs DUU Time Series -->
-  <div class="section-title">DAU vs DUU — Full Time Series</div>
-  <div class="charts-1col">
-    <div class="chart-panel">
-      <h3>Daily Active Users (DAU) vs Daily Unique Users (DUU) &nbsp;<span class="r-badge r-very-strong">r = 0.98</span></h3>
-      <canvas id="chartTimeSeries" height="90"></canvas>
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 1: DAU vs DUU                                                     -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>DAU vs DUU — Correlation, Ratio &amp; Seasonality</h2>
+    <span class="r-tag r-high">r = 0.98 · N = 415 days</span>
+  </div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <h3>Daily Active Users (DAU) vs Daily Unique Users (DUU) — Jan 2025 to Mar 2026</h3>
+      <canvas id="c1_timeseries" height="85"></canvas>
       <div class="insight">
-        <strong>DAU</strong> counts users who took an active action; <strong>DUU</strong> counts any unique visitor including passive/background sessions.
-        The near-perfect correlation (r = 0.98) means either metric is a reliable trend proxy — but they are conceptually different engagement signals.
-        DUU consistently runs ~13–14× higher than DAU.
+        <strong>DAU</strong> counts users who took an intentional action; <strong>DUU</strong> counts any unique visitor including background sync and passive sessions.
+        Despite measuring different things, the two track almost perfectly (r = 0.98) — DUU runs consistently <strong>~13–14× higher</strong> than DAU.
+        Both metrics show the same seasonal arc: a steady climb from Jan → May 2025, a summer plateau (Jun–Aug), a recovery in Sep–Nov, and a pronounced holiday dip in Dec–Jan.
       </div>
     </div>
   </div>
 
-  <!-- DAU/DUU Ratio -->
-  <div class="charts-1col">
-    <div class="chart-panel">
-      <h3>DAU / DUU Ratio — Weekday vs Weekend Pattern</h3>
-      <canvas id="chartRatio" height="75"></canvas>
+  <div class="grid-1">
+    <div class="panel">
+      <h3>DAU / DUU Ratio (%) — Weekday vs Weekend &amp; Seasonal Pattern</h3>
+      <canvas id="c1_ratio" height="80"></canvas>
       <div class="insight">
-        The ratio drops reliably from <strong>~7.3%</strong> on weekdays to <strong>~4.0%</strong> on weekends and holidays.
-        DUU remains elevated on weekends (background sync, mobile, consumer use) while DAU collapses — confirming DAU is the sharper enterprise-work signal.
-        Holiday dips (Christmas, New Year, July 4th) are clearly visible as multi-day troughs near 3–4%.
+        The ratio separates cleanly into two regimes: <span class="hi">weekdays ~7.3%</span> and <span class="warn">weekends ~4.0%</span> — a drop of ~45%.
+        DUU stays elevated on weekends (background sync, mobile, consumer use) while DAU collapses, confirming DAU is the sharper enterprise-work signal.
+        <strong>Seasonal compression:</strong> the weekday ratio drifts upward from ~7.2% in Jan 2025 to ~7.5–8.0% by Apr–May 2025, then retreats over summer. Holiday periods (Dec 25 – Jan 4) see the ratio fall to 3–4% as Enterprise activity disappears while consumer DUU persists.
       </div>
     </div>
   </div>
 
-  <!-- Storage Scatter Charts -->
-  <div class="section-title">File Count as a Storage Predictor — Per-Farm Analysis (636 farms)</div>
-  <div class="charts-2col">
-    <div class="chart-panel">
-      <h3>File Count vs User Storage (per farm) &nbsp;<span class="r-badge r-very-strong">r = 0.93</span></h3>
-      <canvas id="chartScatterUser" height="200"></canvas>
+  <div class="grid-2">
+    <div class="panel">
+      <h3>Monthly Average DAU vs DUU — Seasonal Trend</h3>
+      <canvas id="c1_monthly" height="190"></canvas>
       <div class="insight">
-        <strong>File count explains 87% of user storage variance</strong> across farms.
-        This is the strongest single-variable predictor for storage capacity planning —
-        stronger than DAU, region, or segment alone.
+        Both metrics grow through early 2025 then plateau. The <strong>summer dip (Jul–Aug)</strong> is visible in DAU but barely registers in DUU — further evidence that DUU captures persistent background activity that doesn't vary with human work schedules.
       </div>
     </div>
-    <div class="chart-panel">
-      <h3>File Count vs DB/SQL Storage (per farm) &nbsp;<span class="r-badge r-strong">r = 0.87</span></h3>
-      <canvas id="chartScatterDb" height="200"></canvas>
+    <div class="panel">
+      <h3>DAU/DUU Ratio Distribution — Weekday vs Weekend</h3>
+      <canvas id="c1_dist" height="190"></canvas>
       <div class="insight">
-        DB storage correlation is <strong>weaker (r = 0.87)</strong> because SQL metadata accumulates overhead from
-        versioning, sharing records, permissions, and tenant config that isn't purely file-driven.
-        User storage is a cleaner signal — it's essentially a direct byte-sum of file content.
+        Weekday ratios cluster tightly around <span class="hi">6.9–8.5%</span> with a long right tail in spring/summer peaks.
+        Weekend ratios form a distinct lower cluster at <span class="warn">3.4–4.9%</span>.
+        The bimodal separation is clean — day-of-week is the dominant driver of the ratio, stronger than season or segment mix.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 2: DAU & DUU → DB Cores                                          -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>DAU &amp; DUU as Predictors for Database Cores (MaxDbCores)</h2>
+    <span class="r-tag r-mid">Best: r = 0.52 (farm-level DAU)</span>
+  </div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <h3>All User Signals vs MaxDbCores — Ranked by Correlation Strength</h3>
+      <canvas id="c2_ranking" height="80"></canvas>
+      <div class="insight">
+        <strong>All-segment DAU (farm-level)</strong> and <strong>Consumer DUU (date-level)</strong> are the two best proxies for provisioned capacity, both at r ≈ 0.50–0.52.
+        Isolating Enterprise — whether via DAU or DUU — <span class="warn">makes the correlation worse</span>, despite Enterprise being the largest segment (~40% of DAU, ~73% of DUU volume).
+        Enterprise capacity is decoupled from user activity: it is driven by SLA contracts, compliance requirements, and peak-headroom buffers.
       </div>
     </div>
   </div>
 
-  <!-- Methodology -->
-  <div class="section-title">Methodology &amp; Data Sources</div>
-  <div class="chart-panel" style="margin-bottom:28px">
-    <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
-      <thead>
-        <tr style="border-bottom:1px solid #334155; color:#64748b; text-align:left;">
-          <th style="padding:8px 12px;">Analysis</th>
-          <th style="padding:8px 12px;">Tables Joined</th>
-          <th style="padding:8px 12px;">N</th>
-          <th style="padding:8px 12px;">Pearson r</th>
-          <th style="padding:8px 12px;">R²</th>
-          <th style="padding:8px 12px;">Interpretation</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #1e293b;">
-          <td style="padding:8px 12px; color:#e2e8f0;">DUU ↔ DAU</td>
-          <td style="padding:8px 12px; color:#94a3b8;"><code>SPO_DUUSegmented</code> × <code>SPO_DAUSegmented</code></td>
-          <td style="padding:8px 12px; color:#94a3b8;">415 days</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-very-strong">0.9844</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">96.9%</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Interchangeable for trend; different engagement semantics</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1e293b;">
-          <td style="padding:8px 12px; color:#e2e8f0;">Files → User Storage</td>
-          <td style="padding:8px 12px; color:#94a3b8;"><code>SPO_FileCountSegmentedByFarm</code> × <code>SPO_UserStorage</code></td>
-          <td style="padding:8px 12px; color:#94a3b8;">636 farms</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-very-strong">0.9335</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">87.1%</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Best single predictor for storage provisioning</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 12px; color:#e2e8f0;">Files → DB Storage</td>
-          <td style="padding:8px 12px; color:#94a3b8;"><code>SPO_FileCountSegmentedByFarm</code> × <code>SPO_Database_DailyUsage</code></td>
-          <td style="padding:8px 12px; color:#94a3b8;">636 farms</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-strong">0.8699</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">75.7%</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Weaker due to metadata/versioning overhead in SQL</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-
-  <!-- ── DB CORES SECTION ─────────────────────────────────────────────────── -->
-  <div class="section-title" style="margin-top:14px">DB Core Capacity (MaxDbCores) vs User Signals</div>
-  <div class="cards">
-    <div class="card blue">
-      <div class="label">Best Predictor → MaxDbCores</div>
-      <div class="value">r = 0.52</div>
-      <div class="sub">All-segment DAU · farm-level</div>
-    </div>
-    <div class="card green">
-      <div class="label">Consumer DUU → MaxDbCores</div>
-      <div class="value">r = 0.50</div>
-      <div class="sub">Date-level · 2nd best signal</div>
-    </div>
-    <div class="card amber">
-      <div class="label">Total DUU → MaxDbCores</div>
-      <div class="value">r = 0.33</div>
-      <div class="sub">Diluted by Enterprise volume</div>
-    </div>
-    <div class="card rose">
-      <div class="label">Enterprise DAU → MaxDbCores</div>
-      <div class="value">r = 0.23</div>
-      <div class="sub">Weakest — SLA-driven provisioning</div>
-    </div>
-    <div class="card rose">
-      <div class="label">Enterprise DUU → MaxDbCores</div>
-      <div class="value">r = 0.28</div>
-      <div class="sub">Enterprise = 72.6% of DUU volume</div>
-    </div>
-    <div class="card purple">
-      <div class="label">Scale Efficiency Gain</div>
-      <div class="value">−55%</div>
-      <div class="sub">MaxCores/M DAU: Q5 vs Q1 farms</div>
-    </div>
-  </div>
-
-  <div class="charts-2col">
-    <div class="chart-panel">
-      <h3>DAU vs MaxDbCores — Correlation by Customer Segment</h3>
-      <canvas id="chartSegmentCorr" height="220"></canvas>
+  <div class="grid-2">
+    <div class="panel">
+      <h3>DAU vs MaxDbCores — Pearson r by Customer Segment</h3>
+      <canvas id="c2_segment" height="240"></canvas>
       <div class="insight">
-        <strong>Government (r = −0.10)</strong> and <strong>Enterprise (r = 0.22)</strong> are provisioned to compliance and SLA requirements — DAU is irrelevant to their capacity.
-        <strong>Viral &amp; Other (r = 0.62)</strong> and <strong>Charity (r = 0.58)</strong> show the strongest signal because their farms were sized closer to observed demand.
+        <strong>Government (r = −0.10)</strong> is effectively zero/negative — capacity and usage move independently. <strong>Enterprise (r = 0.22)</strong> is only marginally better.
+        <strong>Viral &amp; Other (r = 0.62)</strong> and <strong>Charity (r = 0.58)</strong> have the cleanest signal because these farms were sized closer to observed demand rather than contractual guarantees.
       </div>
     </div>
-    <div class="chart-panel">
+    <div class="panel">
       <h3>Scale Efficiency — MaxCores per M DAU by Farm Size Quintile</h3>
-      <canvas id="chartQuintile" height="220"></canvas>
+      <canvas id="c2_quintile" height="240"></canvas>
       <div class="insight">
-        Every quintile step roughly halves the cores-per-user ratio — a consistent <strong>sub-linear scaling</strong> pattern across all segments.
-        Largest farms (Q5, avg 173M DAU) are provisioned with <strong>55% fewer max cores per million users</strong> than the smallest farms (Q1, avg 25M DAU).
+        Larger farms are substantially more efficient: the largest farms (Q5, avg 173M DAU) require <strong>55% fewer max cores per million users</strong> than the smallest (Q1, avg 25M DAU).
+        This sub-linear scaling is why DAU alone is a moderate predictor — the DAU→cores relationship is non-linear and needs farm size as a co-variate for accurate forecasting.
       </div>
     </div>
   </div>
 
-  <div class="charts-1col">
-    <div class="chart-panel">
-      <h3>All Signals vs MaxDbCores — Ranked by Correlation Strength</h3>
-      <canvas id="chartSignalRanking" height="75"></canvas>
+  <div class="grid-2">
+    <div class="panel">
+      <h3>DAU vs MaxDbCores — Farm Count &amp; Avg DAU per Segment</h3>
+      <canvas id="c2_segsize" height="220"></canvas>
       <div class="insight">
-        <strong>Consumer DUU and total farm-level DAU are equally strong</strong> at r ≈ 0.50–0.52.
-        Isolating Enterprise — whether via DAU or DUU — <em>hurts</em> the correlation despite Enterprise being the dominant volume segment (~40% of DAU, ~73% of DUU).
-        Enterprise capacity is decoupled from usage: it's driven by contracts, compliance, and peak-headroom buffers, not actual user activity.
+        <strong>Enterprise</strong> dominates by avg DAU (40M per farm) but has the second-weakest correlation. <strong>Education</strong> (20M avg DAU) and <strong>SM&amp;C Commercial</strong> (12M) have meaningfully stronger signals despite lower volumes.
+      </div>
+    </div>
+    <div class="panel">
+      <h3>DUU Breakdown — Enterprise vs Consumer vs Total → MaxDbCores</h3>
+      <canvas id="c2_duu_seg" height="220"></canvas>
+      <div class="insight">
+        <strong>Consumer DUU (r = 0.50)</strong> is nearly twice as predictive as <strong>Enterprise DUU (r = 0.28)</strong>, even though Enterprise makes up 72.6% of total DUU volume.
+        Total DUU (r = 0.33) sits between the two — its correlation is dragged down by Enterprise's dominant but noisy volume share.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 3: File Count → DB Storage                                        -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>File Count as a Predictor for DB / SQL Storage</h2>
+    <span class="r-tag r-high">r = 0.87 · N = 636 farms</span>
+  </div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <h3>File Count vs DB Storage — Per Farm (636 farms) &nbsp;<span class="r-tag r-high" style="font-size:0.7rem">r = 0.87</span></h3>
+      <canvas id="c3_scatter" height="95"></canvas>
+      <div class="insight">
+        File count explains <strong>76% of DB storage variance</strong> across 636 farms (r = 0.87). The relationship is strong but not as tight as user storage (r = 0.93) because SQL/DB storage accumulates additional overhead beyond raw file bytes: <strong>metadata, permissions, sharing records, version history, and tenant configuration</strong>.
+        Farms with unusually high DB storage relative to file count tend to be heavy collaboration hubs with complex permission trees and frequent versioning.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 4: File Count → User Storage                                      -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>File Count as a Predictor for User Storage</h2>
+    <span class="r-tag r-high">r = 0.93 · N = 636 farms</span>
+  </div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <h3>File Count vs User Storage — Per Farm (636 farms) &nbsp;<span class="r-tag r-high" style="font-size:0.7rem">r = 0.93</span></h3>
+      <canvas id="c4_scatter" height="95"></canvas>
+      <div class="insight">
+        File count explains <strong>87% of user storage variance</strong> — the strongest single-variable predictor available for storage capacity planning.
+        User storage is essentially a direct byte-sum of file content, so the tighter fit vs DB storage is expected.
+        <strong>Practical implication:</strong> file count growth rate is the most reliable leading indicator for storage provisioning decisions — more reliable than DAU, region, or segment mix alone.
       </div>
     </div>
   </div>
 
-  <!-- Updated methodology -->
-  <div class="section-title">Updated Methodology — DB Cores Analysis</div>
-  <div class="chart-panel" style="margin-bottom:28px">
-    <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+  <div class="grid-2">
+    <div class="panel">
+      <h3>Storage Predictor Comparison — DB vs User Storage (r values)</h3>
+      <canvas id="c4_compare" height="170"></canvas>
+      <div class="insight">
+        The 0.06 gap in r (0.93 vs 0.87) represents a meaningful difference in predictability. For storage capacity planning, <strong>always use user storage as the primary metric</strong> — it is cleaner, more directly file-driven, and requires fewer adjustment factors.
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Top 20 Farms — File Count vs Both Storage Types</h3>
+      <canvas id="c4_top20" height="170"></canvas>
+      <div class="insight">
+        US farms dominate the top 20 by file count and both storage dimensions. The DB/User storage ratio varies across farms — higher ratios indicate heavier metadata load (collaboration-intensive tenants).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- METHODOLOGY                                                                -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="methodology">
+  <div class="section-header"><h2>Methodology</h2></div>
+  <div class="panel">
+    <table class="meth-table">
       <thead>
-        <tr style="border-bottom:1px solid #334155; color:#64748b; text-align:left;">
-          <th style="padding:8px 12px;">Signal</th>
-          <th style="padding:8px 12px;">Granularity</th>
-          <th style="padding:8px 12px;">vs DbCores r</th>
-          <th style="padding:8px 12px;">vs MaxDbCores r</th>
-          <th style="padding:8px 12px;">Note</th>
+        <tr>
+          <th>Analysis</th>
+          <th>Source Tables</th>
+          <th>Granularity</th>
+          <th>N</th>
+          <th>Pearson r</th>
+          <th>R²</th>
+          <th>Notes</th>
         </tr>
       </thead>
       <tbody>
-        <tr style="border-bottom:1px solid #1e293b; background:#161b2e">
-          <td style="padding:8px 12px; color:#e2e8f0;">All-segment DAU</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Farm-level</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.51</span></td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.52</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">Best overall predictor</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1e293b;">
-          <td style="padding:8px 12px; color:#e2e8f0;">Consumer DUU</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
-          <td style="padding:8px 12px; color:#64748b;">—</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.50</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">Elastic demand signal — nearly matches farm DAU</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1e293b; background:#161b2e">
-          <td style="padding:8px 12px; color:#e2e8f0;">Total DUU</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.36</span></td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.33</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">Diluted by Enterprise's 72.6% volume share</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1e293b;">
-          <td style="padding:8px 12px; color:#e2e8f0;">All-segment DAU</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.33</span></td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.33</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">MaxDbCores is stable — low date-level variance</td>
-        </tr>
-        <tr style="border-bottom:1px solid #1e293b; background:#161b2e">
-          <td style="padding:8px 12px; color:#e2e8f0;">Enterprise DUU</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
-          <td style="padding:8px 12px; color:#64748b;">—</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate" style="background:#1a0a0a;color:#f87171">0.28</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">SLA-provisioned — usage doesn't drive capacity</td>
+        <tr>
+          <td>DAU ↔ DUU</td>
+          <td><code>SPO_DAUSegmented</code> × <code>SPO_DUUSegmented</code></td>
+          <td>Daily aggregate</td>
+          <td>415 days</td>
+          <td><span class="pill r-high">0.9844</span></td>
+          <td>96.9%</td>
+          <td>Joined on Date; DAU excludes Worldwide env</td>
         </tr>
         <tr>
-          <td style="padding:8px 12px; color:#e2e8f0;">Enterprise DAU</td>
-          <td style="padding:8px 12px; color:#94a3b8;">Farm-level</td>
-          <td style="padding:8px 12px; color:#64748b;">—</td>
-          <td style="padding:8px 12px;"><span class="r-badge r-moderate" style="background:#1a0a0a;color:#f87171">0.23</span></td>
-          <td style="padding:8px 12px; color:#94a3b8;">Weakest — isolating Enterprise makes it worse</td>
+          <td>All DAU → MaxDbCores</td>
+          <td><code>SPO_DAUSegmentedByFarmAndCustomerType</code> × <code>SPO_Database_DailyUsage</code></td>
+          <td>Farm-level cumulative</td>
+          <td>610 farms</td>
+          <td><span class="pill r-mid">0.5243</span></td>
+          <td>27.5%</td>
+          <td>Filter: MaxDbCores &gt; 10,000</td>
+        </tr>
+        <tr>
+          <td>Consumer DUU → MaxDbCores</td>
+          <td><code>SPO_DUUSegmented</code> × <code>SPO_Database_DailyUsage</code></td>
+          <td>Daily aggregate</td>
+          <td>428 days</td>
+          <td><span class="pill r-mid">0.4975</span></td>
+          <td>24.8%</td>
+          <td>Consumer segment only from SPO_DUUSegmented</td>
+        </tr>
+        <tr>
+          <td>Enterprise DAU → MaxDbCores</td>
+          <td><code>SPO_DAUSegmentedByFarmAndCustomerType</code> × <code>SPO_Database_DailyUsage</code></td>
+          <td>Farm-level cumulative</td>
+          <td>610 farms</td>
+          <td><span class="pill r-low">0.2294</span></td>
+          <td>5.3%</td>
+          <td>Enterprise segment only; capacity SLA-driven</td>
+        </tr>
+        <tr>
+          <td>Enterprise DUU → MaxDbCores</td>
+          <td><code>SPO_DUUSegmented</code> × <code>SPO_Database_DailyUsage</code></td>
+          <td>Daily aggregate</td>
+          <td>428 days</td>
+          <td><span class="pill r-low">0.2780</span></td>
+          <td>7.7%</td>
+          <td>Enterprise = 72.6% of total DUU volume</td>
+        </tr>
+        <tr>
+          <td>File Count → DB Storage</td>
+          <td><code>SPO_FileCountSegmentedByFarm</code> × <code>SPO_Database_DailyUsage</code></td>
+          <td>Farm-level cumulative</td>
+          <td>636 farms</td>
+          <td><span class="pill r-high">0.8699</span></td>
+          <td>75.7%</td>
+          <td>Weaker than user storage due to metadata overhead</td>
+        </tr>
+        <tr>
+          <td>File Count → User Storage</td>
+          <td><code>SPO_FileCountSegmentedByFarm</code> × <code>SPO_UserStorage</code></td>
+          <td>Farm-level cumulative</td>
+          <td>636 farms</td>
+          <td><span class="pill r-high">0.9335</span></td>
+          <td>87.1%</td>
+          <td>Best single predictor for storage provisioning</td>
         </tr>
       </tbody>
     </table>
   </div>
+</div>
 
 </div><!-- /page -->
 
 <script>
-// ─── DATA ────────────────────────────────────────────────────────────────────
-// [date, totalDau, totalDuu, dau_pct_of_duu]
-const TIME_SERIES = [
+// ─── CHART DEFAULTS ──────────────────────────────────────────────────────────
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#1e293b';
+Chart.defaults.font.family = "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
+Chart.defaults.font.size = 11;
+
+// ─── RAW DATA ────────────────────────────────────────────────────────────────
+// [date, totalDau, totalDuu, ratio]
+const TS = [
 ["2025-01-07",164992544,2244475478,7.35],["2025-01-08",165867919,2261048933,7.34],["2025-01-09",164668997,2247080906,7.33],["2025-01-10",155316950,2167111429,7.17],["2025-01-11",54650640,1380361155,3.96],["2025-01-12",51573400,1380447736,3.74],["2025-01-13",166080978,2296319780,7.23],["2025-01-14",169279589,2305492625,7.34],["2025-01-15",170880605,2321119479,7.36],["2025-01-16",170304945,2333908148,7.30],["2025-01-17",158321012,2210364698,7.16],["2025-01-18",55787758,1401194257,3.98],["2025-01-19",54853121,1411322708,3.89],["2025-01-20",151167810,2213153902,6.83],["2025-01-21",172073661,2343344420,7.34],["2025-01-22",171286556,2335905904,7.33],["2025-01-23",171687588,2329741515,7.37],["2025-01-24",158908308,2200444396,7.22],["2025-01-25",56268176,1399722737,4.02],["2025-01-26",53471616,1383235870,3.87],["2025-01-27",168204905,2326551962,7.23],["2025-01-28",171044988,2306447297,7.42],["2025-01-29",167014752,2287039176,7.30],["2025-01-30",168487980,2290801667,7.35],["2025-01-31",157977114,2214685081,7.13],["2025-02-01",57462697,1419168104,4.05],["2025-02-02",56843642,1436301695,3.96],["2025-02-03",170566600,2367790025,7.20],["2025-02-04",176567480,2397539011,7.36],["2025-02-05",176613405,2399423059,7.36],["2025-02-06",175394240,2381669093,7.36],["2025-02-07",163414762,2261162162,7.23],["2025-02-08",59275588,1430877348,4.14],["2025-02-09",57871658,1447678004,4.00],["2025-02-10",173829818,2394169679,7.26],["2025-02-11",173771446,2378358000,7.31],["2025-02-12",175840249,2399563805,7.33],["2025-02-13",174840488,2391804129,7.31],["2025-02-14",158861540,2257746412,7.04],["2025-02-15",56627967,1431974453,3.95],["2025-02-16",57136166,1443027396,3.96],["2025-02-17",156015384,2305140308,6.77],["2025-02-18",173810968,2409057306,7.21],["2025-02-19",172854638,2396641626,7.21],["2025-02-20",171855031,2367730510,7.26],["2025-02-21",159212581,2266188932,7.03],["2025-02-22",57803071,1437327772,4.02],["2025-02-23",55101976,1439704361,3.83],["2025-02-24",173010351,2421848762,7.14],["2025-02-25",179802774,2455881414,7.32],["2025-02-26",176661250,2425652045,7.28],["2025-02-27",176961516,2423470869,7.30],["2025-02-28",163074756,2293450122,7.11],["2025-03-01",59652049,1442356671,4.14],["2025-03-02",58854973,1480879876,3.97],["2025-03-03",170830320,2390466882,7.15],["2025-03-04",174181772,2394249930,7.28],["2025-03-05",178104191,2443046916,7.29],["2025-03-06",178363067,2434222193,7.33],["2025-03-07",165654615,2322135634,7.13],["2025-03-08",59419138,1445711734,4.11],["2025-03-09",60308568,1487021325,4.06],["2025-03-10",183921664,2481942219,7.41],["2025-03-11",184456916,2486008006,7.42],["2025-03-12",182192683,2473347011,7.37],["2025-03-13",180225351,2458752496,7.33],["2025-03-14",161357275,2273778099,7.10],["2025-03-15",60467826,1462115651,4.14],["2025-03-16",62143935,1489156284,4.17],["2025-03-17",177578964,2463178875,7.21],["2025-03-18",182288880,2479618060,7.35],["2025-03-19",180191523,2455831013,7.34],["2025-03-20",176067776,2424068111,7.26],["2025-03-21",165083643,2292591005,7.20],["2025-03-22",59952539,1466441001,4.09],["2025-03-23",62389329,1491659174,4.18],["2025-03-24",181804173,2501045379,7.27],["2025-03-25",187011431,2475970079,7.55],["2025-03-26",186180025,2484073907,7.49],["2025-03-27",186092942,2448104396,7.60],["2025-03-28",171616987,2304599002,7.45],["2025-03-29",61069541,1433592797,4.26],["2025-03-30",63220221,1450150145,4.36],["2025-03-31",177342807,2369614367,7.48],["2025-04-01",188217187,2448374036,7.69],["2025-04-02",188635420,2454937157,7.68],["2025-04-03",189957904,2450990020,7.75],["2025-04-04",173970877,2307292219,7.54],["2025-04-05",62467939,1466067811,4.26],["2025-04-06",67001441,1501162420,4.46],["2025-04-07",191679420,2477936414,7.74],["2025-04-08",194567394,2474685553,7.86],["2025-04-09",192883907,2434521567,7.92],["2025-04-10",190852706,2399808941,7.95],["2025-04-11",175366750,2258902881,7.76],["2025-04-12",60858934,1424159321,4.27],["2025-04-13",64577806,1440488147,4.48],["2025-04-14",181883981,2340128546,7.77],["2025-04-15",184437527,2340801086,7.88],["2025-04-16",180643869,2308213995,7.83],["2025-04-17",168119082,2188564261,7.68],["2025-04-18",112041022,1775526793,6.31],["2025-04-19",55045667,1375774713,4.00],["2025-04-20",55051181,1364860090,4.03],["2025-04-21",135760947,1981941231,6.85],["2025-04-22",189504335,2378432579,7.97],["2025-04-23",189195500,2366280881,8.00],["2025-04-24",187633663,2341770753,8.01],["2025-04-25",169607924,2204664562,7.69],["2025-04-26",63389799,1438485830,4.41],["2025-04-27",68174738,1473654413,4.63],["2025-04-28",191235547,2386481674,8.01],["2025-04-29",193124350,2370925609,8.15],["2025-04-30",192933160,2350232583,8.21],["2025-05-01",138431663,1938039152,7.14],["2025-05-02",159661035,2087072555,7.65],["2025-05-03",62242431,1418356627,4.39],["2025-05-04",62896052,1427775586,4.41],["2025-05-05",177882590,2256235837,7.88],["2025-05-06",201932186,2414769547,8.36],["2025-05-07",203949631,2425633015,8.41],["2025-05-08",197125856,2364168077,8.34],["2025-05-09",186764853,2258005773,8.27],["2025-05-10",65595017,1444253935,4.54],["2025-05-11",70230830,1458672626,4.81],["2025-05-12",204314758,2423499070,8.43],["2025-05-13",209837646,2449422432,8.57],["2025-05-14",208184876,2442457032,8.52],["2025-05-15",204963333,2406944553,8.52],["2025-05-16",189371707,2275160749,8.32],["2025-05-17",66682776,1442952946,4.62],["2025-05-18",72660994,1475054370,4.93],["2025-05-19",202833594,2406967289,8.43],["2025-05-20",208391251,2443132167,8.53],["2025-05-21",206406310,2425612300,8.51],["2025-05-22",203845516,2405266479,8.47],["2025-05-23",183887553,2258747122,8.14],["2025-05-24",65181062,1439324164,4.53],["2025-05-25",69493825,1473717802,4.72],["2025-05-26",161020083,2145024003,7.51],["2025-05-27",203054781,2425057703,8.37],["2025-05-28",201277215,2393499848,8.41],["2025-05-29",175425982,2215549742,7.92],["2025-05-30",172324323,2177560387,7.91],["2025-05-31",65673950,1441889280,4.55],["2025-06-01",70325066,1468917927,4.79],["2025-06-02",195657288,2377642235,8.23],["2025-06-03",204482046,2432436255,8.41],["2025-06-04",201847148,2415371385,8.36],["2025-06-05",195795237,2365186650,8.28],["2025-06-06",175946062,2196416251,8.01],["2025-06-07",61768130,1423026860,4.34],["2025-06-09",175316974,2229678265,7.86],["2025-06-10",121350869,2409254783,5.04],["2025-06-11",201109578,2406235918,8.36],["2025-06-14",63815426,1430273718,4.46],["2025-06-15",69088992,1458055787,4.74],["2025-06-16",198366073,2386144275,8.31],["2025-06-17",200491848,2401607255,8.35],["2025-06-18",196933653,2375869009,8.29],["2025-06-19",170783930,2181146861,7.83],["2025-06-20",168066107,2153103375,7.81],["2025-06-21",60982357,1407177687,4.33],["2025-06-22",67411035,1452265248,4.64],["2025-06-23",194052594,2360229924,8.22],["2025-06-24",194730885,2367910707,8.22],["2025-06-25",195053256,2356588884,8.28],["2025-06-26",192049091,2320012805,8.28],["2025-06-27",174011466,2183330516,7.97],["2025-06-28",61616647,1419435022,4.34],["2025-06-29",66598700,1437927996,4.63],["2025-06-30",188858993,2327426959,8.11],["2025-07-01",166003973,2328450867,7.13],["2025-07-02",166449231,2316791408,7.18],["2025-07-03",160394293,2266902577,7.08],["2025-07-04",125607198,1969433662,6.38],["2025-07-05",46456747,1352314872,3.44],["2025-07-06",52217197,1384981371,3.77],["2025-07-07",162246508,2305673319,7.04],["2025-07-08",165771857,2321139480,7.14],["2025-07-09",162706513,2285671939,7.12],["2025-07-10",162236972,2289872288,7.08],["2025-07-11",148932455,2157869789,6.90],["2025-07-12",49875752,1394407577,3.58],["2025-07-13",52172872,1423018693,3.67],["2025-07-14",157032176,2276948501,6.90],["2025-07-15",162650734,2293782405,7.09],["2025-07-16",161377407,2280572396,7.08],["2025-07-17",160164160,2256606294,7.10],["2025-07-18",146685451,2132393494,6.88],["2025-07-19",49975591,1381995880,3.62],["2025-07-20",48120540,1376015745,3.50],["2025-07-21",153763130,2238014732,6.87],["2025-07-22",160666262,2270685574,7.08],["2025-07-23",159035142,2260764781,7.03],["2025-07-24",157703055,2232034936,7.07],["2025-07-28",156221291,2249607122,6.94],["2025-07-29",159405674,2255383458,7.07],["2025-07-30",159050691,2246031463,7.08],["2025-07-31",158344220,2234378975,7.09],["2025-08-01",144954624,2117851050,6.84],["2025-08-02",50009698,1382399175,3.62],["2025-08-03",51517580,1400449829,3.68],["2025-08-04",154368408,2242011560,6.89],["2025-08-05",159437624,2261378069,7.05],["2025-08-06",158167541,2244773743,7.05],["2025-08-07",155936205,2214106026,7.04],["2025-08-08",144118873,2102828663,6.85],["2025-08-09",48667696,1366376234,3.56],["2025-08-10",47645096,1359175410,3.51],["2025-08-11",149877044,2196046703,6.82],["2025-08-12",154814292,2207683643,7.01],["2025-08-13",154030650,2204997358,6.99],["2025-08-14",151378265,2169918602,6.98],["2025-08-15",122809044,1926908877,6.37],["2025-08-16",48691389,1371406849,3.55],["2025-08-17",52750596,1402697663,3.76],["2025-08-18",159945242,2274069841,7.03],["2025-08-19",164898707,2290027832,7.20],["2025-08-20",164535082,2280723729,7.21],["2025-08-21",163760985,2267030715,7.22],["2025-08-22",151736840,2161133254,7.02],["2025-08-23",52465558,1393819919,3.76],["2025-08-24",55155053,1425076036,3.87],["2025-08-25",162264133,2290845248,7.08],["2025-08-26",171910610,2340954870,7.34],["2025-08-27",167215371,2296751312,7.28],["2025-08-28",170991439,2316285888,7.38],["2025-08-29",156394044,2163338822,7.23],["2025-08-30",54324585,1421285297,3.82],["2025-08-31",57257075,1438643493,3.98],["2025-09-01",138774659,2115595939,6.56],["2025-09-02",180051721,2396001799,7.51],["2025-09-03",180194805,2419271525,7.45],["2025-09-04",180369412,2397570856,7.52],["2025-09-05",164741396,2251267132,7.32],["2025-09-06",56752168,1440764568,3.94],["2025-09-07",61092130,1476887647,4.14],["2025-09-08",182545625,2429934953,7.51],["2025-09-09",186449864,2449791541,7.61],["2025-09-10",185177876,2451188840,7.55],["2025-09-11",183337253,2406396508,7.62],["2025-09-12",170084720,2290442311,7.43],["2025-09-13",57998406,1444562863,4.01],["2025-09-14",58559523,1458518417,4.02],["2025-09-15",178964129,2421344644,7.39],["2025-09-16",185685146,2446313416,7.59],["2025-09-17",186509930,2459744034,7.58],["2025-09-18",184797559,2431551897,7.60],["2025-09-19",170768374,2302771665,7.42],["2025-09-20",58933146,1456140753,4.05],["2025-09-21",62261115,1490209168,4.18],["2025-09-22",184101325,2463026960,7.47],["2025-09-23",183677701,2435216242,7.54],["2025-09-24",186165741,2437414277,7.64],["2025-09-25",186824195,2443645289,7.65],["2025-09-26",171383988,2306770681,7.43],["2025-09-27",59762925,1465489379,4.08],["2025-09-28",64583196,1511424480,4.27],["2025-09-29",186377260,2476247616,7.53],["2025-09-30",188681457,2484038692,7.60],["2025-10-01",185257218,2437268200,7.60],["2025-10-02",176823464,2366648507,7.47],["2025-10-03",163824557,2232519323,7.34],["2025-10-04",59898679,1464337600,4.09],["2025-10-05",62317124,1478125397,4.22],["2025-10-06",182280379,2465548728,7.39],["2025-10-07",188944039,2466786081,7.66],["2025-10-08",188200716,2464788028,7.64],["2025-10-09",187403747,2458471980,7.62],["2025-10-10",170523336,2311618873,7.38],["2025-10-11",60277314,1487773265,4.05],["2025-10-12",59312419,1481878413,4.00],["2025-10-13",168143389,2375959379,7.08],["2025-10-14",190158357,2519046407,7.55],["2025-10-15",189651483,2517750381,7.53],["2025-10-16",188285744,2484322169,7.58],["2025-10-17",172718838,2335723261,7.39],["2025-10-18",60225601,1480928194,4.07],["2025-10-19",64490518,1519411182,4.24],["2025-10-20",179297465,2444365339,7.34],["2025-10-21",186639059,2480003972,7.53],["2025-10-22",187068856,2472091767,7.57],["2025-10-23",186028307,2446165447,7.60],["2025-10-24",171864414,2334343591,7.36],["2025-10-25",60671210,1481895608,4.09],["2025-10-26",64570121,1516331762,4.26],["2025-10-27",186283495,2514924065,7.41],["2025-10-28",186675390,2483842042,7.52],["2025-10-29",185353130,2476093233,7.49],["2025-10-30",184967038,2475171023,7.47],["2025-10-31",166505436,2315022225,7.19],["2025-11-01",59099264,1483438816,3.98],["2025-11-02",61866901,1507041165,4.11],["2025-11-03",185275151,2531881029,7.32],["2025-11-04",193394835,2568697966,7.53],["2025-11-05",192396638,2550822842,7.54],["2025-11-06",192034395,2553465408,7.52],["2025-11-07",177639974,2417948444,7.35],["2025-11-08",63517297,1530780484,4.15],["2025-11-09",66662250,1557710325,4.28],["2025-11-10",186128444,2530497234,7.36],["2025-11-11",178248954,2453985363,7.26],["2025-11-12",193887952,2577271433,7.52],["2025-11-13",193233337,2561235041,7.54],["2025-11-14",178477185,2425366788,7.36],["2025-11-15",64701814,1532831106,4.22],["2025-11-16",67630029,1552235931,4.36],["2025-11-17",189898332,2576619377,7.37],["2025-11-18",195778549,2597510243,7.54],["2025-11-19",194189534,2580024450,7.53],["2025-11-20",189014042,2521436164,7.50],["2025-11-21",175544117,2396585549,7.32],["2025-11-22",63480770,1516512011,4.19],["2025-11-23",62668975,1517023564,4.13],["2025-11-24",184332474,2522964342,7.31],["2025-11-25",190078700,2543207213,7.47],["2025-11-26",182166499,2482984196,7.34],["2025-11-27",155384575,2268983577,6.85],["2025-11-28",147263508,2206608017,6.67],["2025-11-29",58671053,1500094636,3.91],["2025-11-30",66736161,1573799022,4.24],["2025-12-01",190499254,2572616475,7.40],["2025-12-02",194489626,2590940116,7.51],["2025-12-03",193814168,2580644642,7.51],["2025-12-04",191816358,2555529880,7.51],["2025-12-05",175366788,2405429432,7.29],["2025-12-06",63802770,1524936137,4.18],["2025-12-07",65533007,1561833520,4.20],["2025-12-08",179830615,2489564578,7.22],["2025-12-09",192873178,2599358566,7.42],["2025-12-10",190678059,2561679566,7.44],["2025-12-11",188533645,2536785055,7.43],["2025-12-12",172709981,2390699982,7.22],["2025-12-13",61162973,1502867425,4.07],["2025-12-14",63661373,1539459518,4.14],["2025-12-15",185506715,2555388309,7.26],["2025-12-16",185102126,2531283261,7.31],["2025-12-17",182655522,2509700763,7.28],["2025-12-18",178852380,2482757146,7.20],["2025-12-19",161163047,2304694588,6.99],["2025-12-20",55907859,1476976162,3.79],["2025-12-21",52980686,1439538331,3.68],["2025-12-22",144420440,2224063061,6.49],["2025-12-23",135826432,2127085486,6.39],["2025-12-24",97533856,1798502410,5.42],["2025-12-25",48649693,1412094359,3.45],["2025-12-26",75821107,1631531730,4.65],["2025-12-28",40517727,1405291419,2.88],["2025-12-29",110035179,1928962641,5.70],["2025-12-30",107910893,1986232308,5.43],["2025-12-31",87574520,1723545758,5.08],["2026-01-01",41828050,1341768265,3.12],["2026-01-02",94632740,1782884473,5.31],["2026-01-03",47394475,1405298158,3.37],["2026-01-04",54943667,1483152088,3.70],["2026-01-05",167277475,2406787112,6.95],["2026-01-06",167418699,2386960199,7.01],["2026-01-07",180904929,2500632702,7.23],["2026-01-08",183129071,2507679548,7.30],["2026-01-09",172549862,2402363469,7.18],["2026-01-10",61162408,1516300906,4.03],["2026-01-11",59263736,1512437558,3.92],["2026-01-12",183882462,2543889503,7.23],["2026-01-13",191688819,2587263729,7.41],["2026-01-14",189492086,2571159465,7.37],["2026-01-15",186517226,2541627581,7.34],["2026-01-16",177859963,2450653886,7.26],["2026-01-17",63814884,1532116831,4.17],["2026-01-18",64725922,1544037172,4.19],["2026-01-19",172462390,2460524678,7.01],["2026-01-20",195934131,2623217942,7.47],["2026-01-21",195809514,2614916986,7.49],["2026-01-22",194823323,2575378550,7.56],["2026-01-23",181476323,2474987723,7.33],["2026-01-24",65673665,1545358730,4.25],["2026-01-25",64750160,1539080097,4.21],["2026-01-26",181420145,2545623335,7.13],["2026-01-27",197107799,2636379520,7.48],["2026-01-28",197322319,2626598715,7.51],["2026-01-29",196957348,2618976549,7.52],["2026-01-30",183847928,2496056577,7.37],["2026-01-31",69232244,1573565821,4.40],["2026-02-01",70531438,1583254962,4.45],["2026-02-02",194924068,2647108589,7.36],["2026-02-03",200587830,2662210614,7.53],["2026-02-04",199967248,2646923647,7.55],["2026-02-05",200145189,2638029687,7.59],["2026-02-06",187316334,2502579786,7.48],["2026-02-07",70573870,1560917663,4.52],["2026-02-08",71186982,1577141282,4.51],["2026-02-09",204065604,2649378256,7.70],["2026-02-10",207959204,2663262722,7.81],["2026-02-11",199641648,2599253816,7.68],["2026-02-12",196440048,2611347945,7.52],["2026-02-13",180074152,2453354373,7.34],["2026-02-14",64223776,1527212742,4.21],["2026-02-15",65174461,1525741783,4.27],["2026-02-16",161923283,2359252130,6.86],["2026-02-17",178794001,2467793530,7.25],["2026-02-18",186575007,2544370081,7.33],["2026-02-19",189063380,2549781956,7.41],["2026-02-20",176356470,2431522397,7.25],["2026-02-21",67722279,1549400183,4.37],["2026-02-22",66579042,1549630062,4.30],["2026-02-23",191654310,2609993531,7.34],["2026-02-24",202443455,2695232807,7.51],["2026-02-25",202298885,2681890341,7.54],["2026-02-26",201055288,2673101080,7.52],["2026-02-27",185196179,2537696885,7.30],["2026-02-28",71489382,1613177287,4.43],["2026-03-01",72053676,1625197997,4.43],["2026-03-02",200496929,2735738746,7.33],["2026-03-03",201184375,2743887006,7.33],["2026-03-04",199947852,2743351956,7.29]
 ];
 
-// [farm, filesB (billions), dbStorageTB, userStorageTB] — top 200 farms by userStorage
+// [farm, filesB, dbStorageTB_cumul, userStorageTB_cumul] — top 200 farms
 const SCATTER = [
 ["US_230_Content",35566,994175,77968640],["US_275_Content",39040,790807,71893554],["US_220_Content",38695,696140,70904979],["US_213_Content",29779,882207,68165670],["US_223_Content",31609,824738,66436028],["US_338_Content",39830,688742,63112429],["US_221_Content",34243,606923,62490862],["US_276_Content",27667,673339,62339029],["US_222_Content",31756,647232,60565914],["US_231_Content",26658,497017,59738554],["US_212_Content",27415,775100,58923185],["US_215_Content",29893,980380,56148865],["US_339_Content",43246,654927,55608335],["US_211_Content",24582,588111,55354888],["US_262_Content",26091,613487,54525217],["US_219_Content",24254,406296,54076978],["US_216_Content",23399,395750,50644831],["US_273_Content",39020,622418,49526536],["US_260_Content",24329,513985,48037633],["US_272_Content",22102,495008,47071213],["US_214_Content",22040,434593,46734615],["US_271_Content",22333,539790,45353120],["US_261_Content",22775,407924,44055001],["EMEA_215_Content",18839,436865,44013444],["US_264_Content",22910,424790,42879103],["EMEA_201_Content",19456,459709,42124221],["US_519_Content",22453,393395,40937285],["CAN_206_Content",18562,627722,39369199],["US_207_Content",17262,509533,37417094],["EMEA_212_Content",19054,467713,36507969],["US_531_Content",18633,280141,35055011],["EMEA_221_Content",16048,580733,35037215],["EMEA_343_Content",17870,120228,34780451],["US_246_Content",15392,372538,34472588],["US_518_Content",16043,267405,34243989],["EMEA_219_Content",15494,530664,33982701],["CAN_216_Content",16878,338740,33776768],["US_305_Content",12332,312178,33376368],["US_283_Content",15514,367628,33120860],["EMEA_213_Content",12402,305806,33117890],["EMEA_220_Content",15358,511702,33059374],["US_244_Content",15249,429691,33040017],["CAN_211_Content",14083,407539,33021811],["US_250_Content",15222,373126,32889118],["EMEA_222_Content",15199,404337,32888316],["EMEA_218_Content",16323,361177,32772462],["US_524_Content",19178,324207,32679805],["EMEA_217_Content",15163,356105,31958626],["US_293_Content",13505,293223,31754976],["EMEA_210_Content",13045,347980,31562360],["US_290_Content",14544,368178,31508080],["US_252_Content",14639,422544,31204800],["US_257_Content",13013,317306,30671337],["EMEA_216_Content",14162,415831,30546639],["EMEA_208_Content",13610,373106,30502838],["US_329_Content",13947,374108,30416999],["US_348_Content",15575,378624,29521765],["US_304_Content",12954,265903,29521661],["US_302_Content",12743,344403,29316884],["EMEA_281_Content",13798,358710,29238006],["US_299_Content",12523,294590,29172461],["APAC_203_Content",12698,210184,29089605],["US_325_Content",12363,275475,28989646],["US_298_Content",12842,320151,28961816],["US_256_Content",14192,337463,28892020],["US_233_Content",9731,224019,28881775],["EMEA_298_Content",13144,265131,28659519],["EMEA_344_Content",15309,167449,28651806],["GBR_226_Content",12198,217550,28624782],["APAC_209_Content",10138,196028,28568398],["EMEA_290_Content",13223,369320,28520034],["EMEA_308_Content",12849,242854,28477444],["US_289_Content",13986,337102,28295565],["US_303_Content",12816,310986,28157743],["EMEA_209_Content",13794,325649,28098820],["CAN_207_Content",12086,276786,27839438],["US_228_Content",11628,334050,27771332],["US_307_Content",10384,137958,27629715],["EMEA_211_Content",13292,377555,27591208],["GBR_230_Content",12514,232016,27469375],["EMEA_206_Content",16817,324202,27237903],["EMEA_309_Content",11160,219621,27147042],["EMEA_315_Content",11904,280554,27073621],["US_326_Content",11922,309614,26950806],["US_217_Content",13295,254053,26763787],["APAC_213_Content",9648,270737,26759126],["EMEA_335_Content",18898,141095,26751707],["APAC_204_Content",10215,162718,26655547],["EMEA_304_Content",12096,227323,26614368],["APAC_229_Content",11473,315191,26612215],["APAC_212_Content",9897,170401,26596226],["CAN_213_Content",14598,199429,26500384],["CAN_209_Content",12761,380738,26473319],["US_334_Content",12608,294889,26399039],["CAN_205_Content",11952,390046,26363972],["US_240_Content",11590,349234,26212371],["US_330_Content",13242,300391,26208326],["EMEA_291_Content",14846,109222,26076067],["EMEA_319_Content",11616,352368,25989536],["US_328_Content",11869,271459,25942125],["APAC_211_Content",10242,230093,25936193],["EMEA_306_Content",12794,187144,25919223],["APAC_220_Content",9593,191570,25896679],["US_332_Content",13233,257210,25865338],["US_306_Content",13145,237873,25855312],["US_291_Content",13364,227905,25627839],["APAC_222_Content",9273,187020,25571063],["US_327_Content",11855,244185,25567499],["US_333_Content",14183,166879,25456615],["CAN_203_Content",11683,337659,25421180],["CAN_212_Content",10791,341704,25204823],["US_331_Content",10953,222528,25183172],["EMEA_310_Content",13374,159493,25173800],["EMEA_307_Content",10661,311775,25160804],["GBR_225_Content",11956,204105,25118233],["EMEA_296_Content",11510,199462,25078465],["GBR_208_Content",9546,248249,25048476],["EMEA_318_Content",12439,219245,24926891],["US_335_Content",11824,245704,24911137],["EMEA_324_Content",10763,317210,24807105],["APAC_202_Content",9428,259536,24797033],["APAC_219_Content",8949,190270,24760741],["EMEA_300_Content",9618,218288,24717992],["APAC_200_Content",8547,222267,24639214],["US_236_Content",10676,293255,24610798],["GBR_232_Content",10675,254465,24607211],["US_245_Content",11234,244593,24603330],["APAC_206_Content",8621,175450,24538494],["US_315_Content",11187,266315,24518837],["EMEA_323_Content",11888,202560,24498983],["EMEA_340_Content",10458,318854,24487341],["US_255_Content",10771,273376,24371807],["CAN_204_Content",11259,337066,24346470],["US_232_Content",9210,265356,24242294],["US_309_Content",17095,244044,24201744],["EMEA_302_Content",10787,283233,24192199],["APAC_210_Content",7638,174263,24073149],["US_530_Content",13568,295458,24059089],["CAN_201_Content",11214,341010,23948478],["US_529_Content",13017,195418,23933534],["EMEA_305_Content",10532,295729,23903005],["US_336_Content",8545,72579,23865190],["EMEA_295_Content",10225,260113,23806973],["US_296_Content",10805,227336,23766136],["APAC_215_Content",9279,221425,23725724],["APAC_214_Content",10460,204754,23659880],["US_354_Content",10481,331850,23652735],["US_234_Content",10404,306488,23583253],["US_292_Content",17308,261271,23577278],["CAN_200_Content",10027,290091,23395417],["US_295_Content",10102,170089,23357037],["EMEA_284_Content",10222,274365,23161590],["APAC_226_Content",10840,264582,23144890],["US_502_Content",11756,307453,23041714],["APAC_218_Content",8324,204587,22987539],["EMEA_321_Content",9622,242506,22951322],["CAN_208_Content",11619,227842,22915784],["APAC_224_Content",10438,197587,22906898],["EMEA_332_Content",10174,305706,22891238],["US_322_Content",11567,173706,22813464],["US_241_Content",9934,229513,22810578],["EMEA_251_Content",7526,185906,22774876],["EMEA_278_Content",8069,68946,22668763],["CAN_210_Content",10254,257230,22661137],["US_274_Content",10284,203038,22619097],["US_318_Content",9938,204125,22602448],["EMEA_255_Content",8609,189068,22532959],["US_243_Content",10918,166540,22509264],["EMEA_282_Content",9916,183530,22317482],["GBR_207_Content",8673,191178,22303952],["US_278_Content",9934,307383,22288068],["APAC_223_Content",8666,192322,22264683],["APAC_225_Content",10134,217124,22229660],["EMEA_322_Content",9926,273929,22214137],["EMEA_313_Content",10058,235565,22210751],["APAC_216_Content",7807,177444,22050378],["APAC_221_Content",8719,175530,21989808],["US_544_Content",9967,167451,21970174],["APAC_208_Content",7605,139214,21927747],["EMEA_280_Content",10437,262124,21918239],["EMEA_338_Content",9692,226988,21909499],["US_238_Content",9379,276306,21824813],["US_209_Content",10465,247076,21723661],["US_525_Content",11306,189922,21723400]
 ];
 
-// ─── CHART DEFAULTS ──────────────────────────────────────────────────────────
-Chart.defaults.color = '#64748b';
-Chart.defaults.borderColor = '#1e293b';
-Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-Chart.defaults.font.size = 11;
+// Segment correlations [segment, r, farmCount, avgDauM, maxCoresPerMDau]
+const SEG = [
+  ["Viral & Other",   0.62, 615, 12.96, 486848],
+  ["Charity",         0.58, 604,  2.38,2709925],
+  ["SM&C Corporate",  0.52, 600,  4.96, 732798],
+  ["SM&C Commercial", 0.50, 612, 12.04, 364451],
+  ["Education",       0.48, 621, 19.95, 317303],
+  ["Unknown",         0.33, 570,  0.02,      0],
+  ["Enterprise",      0.22, 610, 40.44, 158149],
+  ["Government",     -0.10, 624,  5.70,1102309]
+];
 
-// ─── CHART 1: Time Series ─────────────────────────────────────────────────────
-{
-  const labels = TIME_SERIES.map(r => r[0]);
-  const dau    = TIME_SERIES.map(r => r[1] / 1e6);
-  const duu    = TIME_SERIES.map(r => r[2] / 1e6);
+// Quintile [q, avgDauM, maxCoresPerMDau]
+const QUIN = [[1,24.90,808239],[2,67.17,556657],[3,92.96,475856],[4,120.57,436916],[5,173.33,366569]];
 
-  new Chart(document.getElementById('chartTimeSeries'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'DAU (M)',
-          data: dau,
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59,130,246,0.07)',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          tension: 0.2,
-          fill: true,
-          yAxisID: 'yL'
-        },
-        {
-          label: 'DUU (M)',
-          data: duu,
-          borderColor: '#34d399',
-          backgroundColor: 'rgba(52,211,153,0.04)',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          tension: 0.2,
-          fill: false,
-          yAxisID: 'yR'
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}M`
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { maxTicksLimit: 14, maxRotation: 0 },
-          grid: { color: '#1e293b' }
-        },
-        yL: {
-          type: 'linear', position: 'left',
-          title: { display: true, text: 'DAU (millions)', color: '#3b82f6' },
-          grid: { color: '#1e293b' }
-        },
-        yR: {
-          type: 'linear', position: 'right',
-          title: { display: true, text: 'DUU (millions)', color: '#34d399' },
-          grid: { drawOnChartArea: false }
-        }
-      }
-    }
+// All signals vs MaxDbCores
+const SIGS = [
+  ["All DAU · farm-level",   0.52, "#3b82f6"],
+  ["Consumer DUU · date",    0.50, "#34d399"],
+  ["Total DUU · date",       0.33, "#a78bfa"],
+  ["All DAU · date-level",   0.33, "#60a5fa"],
+  ["Enterprise DUU · date",  0.28, "#fb923c"],
+  ["Enterprise DAU · farm",  0.23, "#f87171"]
+];
+
+// DUU signal breakdown
+const DUU_SIGS = [
+  ["Consumer DUU", 0.50, "#34d399"],
+  ["Total DUU",    0.33, "#a78bfa"],
+  ["Enterprise DUU", 0.28, "#f87171"]
+];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function monthlyAvg(ts) {
+  const map = {};
+  ts.forEach(r => {
+    const m = r[0].slice(0,7);
+    if (!map[m]) map[m] = {dau:0,duu:0,n:0};
+    map[m].dau += r[1]; map[m].duu += r[2]; map[m].n++;
   });
-}
-
-// ─── CHART 2: Ratio ───────────────────────────────────────────────────────────
-{
-  const labels = TIME_SERIES.map(r => r[0]);
-  const ratio  = TIME_SERIES.map(r => r[3]);
-
-  new Chart(document.getElementById('chartRatio'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'DAU / DUU (%)',
-          data: ratio,
-          borderColor: '#a78bfa',
-          backgroundColor: ctx => {
-            const v = ctx.raw;
-            return v < 5 ? 'rgba(251,191,36,0.15)' : 'rgba(167,139,250,0.08)';
-          },
-          borderWidth: 1.2,
-          pointRadius: 0,
-          tension: 0.2,
-          fill: true
-        },
-        {
-          label: 'Weekday baseline (7.3%)',
-          data: Array(labels.length).fill(7.3),
-          borderColor: 'rgba(52,211,153,0.4)',
-          borderWidth: 1,
-          borderDash: [6, 4],
-          pointRadius: 0,
-          fill: false
-        },
-        {
-          label: 'Weekend baseline (4.0%)',
-          data: Array(labels.length).fill(4.0),
-          borderColor: 'rgba(251,191,36,0.4)',
-          borderWidth: 1,
-          borderDash: [6, 4],
-          pointRadius: 0,
-          fill: false
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${typeof ctx.parsed.y === 'number' ? ctx.parsed.y.toFixed(2) + '%' : ''}`
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { maxTicksLimit: 14, maxRotation: 0 },
-          grid: { color: '#1e293b' }
-        },
-        y: {
-          min: 2, max: 10,
-          title: { display: true, text: 'DAU as % of DUU' },
-          grid: { color: '#1e293b' },
-          ticks: { callback: v => v + '%' }
-        }
-      }
-    }
-  });
-}
-
-// ─── CHART 3 & 4: Scatter ─────────────────────────────────────────────────────
-function makeScatter(canvasId, xKey, yKey, xLabel, yLabel, color) {
-  const points = SCATTER.map(r => ({
-    x: r[xKey] / 1000,   // files in billions → label as B; storage scaled
-    y: r[yKey] / 1e6,    // TB → millions TB for readability
-    label: r[0]
+  return Object.entries(map).sort().map(([m,v]) => ({
+    month: m,
+    dau: v.dau/v.n/1e6,
+    duu: v.duu/v.n/1e6
   }));
+}
 
-  new Chart(document.getElementById(canvasId), {
-    type: 'scatter',
-    data: {
-      datasets: [{
-        label: 'Farms',
-        data: points,
-        backgroundColor: color,
-        pointRadius: 3,
-        pointHoverRadius: 5
-      }]
+// ─── S1: Time Series ─────────────────────────────────────────────────────────
+new Chart(document.getElementById('c1_timeseries'), {
+  type: 'line',
+  data: {
+    labels: TS.map(r=>r[0]),
+    datasets: [
+      { label:'DAU (M)', data:TS.map(r=>r[1]/1e6), borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.06)', borderWidth:1.5, pointRadius:0, tension:0.2, fill:true, yAxisID:'yL' },
+      { label:'DUU (M)', data:TS.map(r=>r[2]/1e6), borderColor:'#34d399', backgroundColor:'rgba(52,211,153,0.03)', borderWidth:1.5, pointRadius:0, tension:0.2, fill:false, yAxisID:'yR' }
+    ]
+  },
+  options:{
+    responsive:true, interaction:{mode:'index',intersect:false},
+    plugins:{ legend:{position:'top',labels:{boxWidth:10,padding:14}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}M`}} },
+    scales:{
+      x:{ticks:{maxTicksLimit:13,maxRotation:0},grid:{color:'#1e293b'}},
+      yL:{type:'linear',position:'left',title:{display:true,text:'DAU (millions)',color:'#60a5fa'},grid:{color:'#1e293b'}},
+      yR:{type:'linear',position:'right',title:{display:true,text:'DUU (millions)',color:'#34d399'},grid:{drawOnChartArea:false}}
+    }
+  }
+});
+
+// ─── S1: Ratio ───────────────────────────────────────────────────────────────
+new Chart(document.getElementById('c1_ratio'), {
+  type:'line',
+  data:{
+    labels:TS.map(r=>r[0]),
+    datasets:[
+      { label:'DAU/DUU %', data:TS.map(r=>r[3]), borderColor:'#a78bfa', backgroundColor:'rgba(167,139,250,0.07)', borderWidth:1.3, pointRadius:0, tension:0.15, fill:true },
+      { label:'Weekday ~7.3%', data:TS.map(()=>7.3), borderColor:'rgba(52,211,153,0.35)', borderWidth:1, borderDash:[5,4], pointRadius:0, fill:false },
+      { label:'Weekend ~4.0%', data:TS.map(()=>4.0), borderColor:'rgba(251,191,36,0.35)', borderWidth:1, borderDash:[5,4], pointRadius:0, fill:false }
+    ]
+  },
+  options:{
+    responsive:true, interaction:{mode:'index',intersect:false},
+    plugins:{ legend:{position:'top',labels:{boxWidth:10,padding:14}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${typeof ctx.parsed.y==='number'?ctx.parsed.y.toFixed(2)+'%':''}`}} },
+    scales:{
+      x:{ticks:{maxTicksLimit:13,maxRotation:0},grid:{color:'#1e293b'}},
+      y:{min:2,max:9.5,title:{display:true,text:'DAU as % of DUU'},grid:{color:'#1e293b'},ticks:{callback:v=>v+'%'}}
+    }
+  }
+});
+
+// ─── S1: Monthly ─────────────────────────────────────────────────────────────
+{
+  const mo = monthlyAvg(TS);
+  new Chart(document.getElementById('c1_monthly'), {
+    type:'bar',
+    data:{
+      labels: mo.map(m=>m.month),
+      datasets:[
+        { label:'Avg DAU (M)', data:mo.map(m=>m.dau), backgroundColor:'rgba(59,130,246,0.7)', borderRadius:3, yAxisID:'yL' },
+        { label:'Avg DUU (M)', data:mo.map(m=>m.duu), backgroundColor:'rgba(52,211,153,0.5)', borderRadius:3, yAxisID:'yR' }
+      ]
     },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.raw.label}: files=${ctx.parsed.x.toFixed(0)}B · ${yLabel}=${ctx.parsed.y.toFixed(2)}M`
-          }
-        }
-      },
-      scales: {
-        x: {
-          title: { display: true, text: xLabel },
-          grid: { color: '#1e293b' }
-        },
-        y: {
-          title: { display: true, text: yLabel },
-          grid: { color: '#1e293b' }
-        }
+    options:{
+      responsive:true, interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top',labels:{boxWidth:10,padding:12}}},
+      scales:{
+        x:{ticks:{maxRotation:45},grid:{color:'#1e293b'}},
+        yL:{type:'linear',position:'left',title:{display:true,text:'DAU (M)',color:'#60a5fa'},grid:{color:'#1e293b'}},
+        yR:{type:'linear',position:'right',title:{display:true,text:'DUU (M)',color:'#34d399'},grid:{drawOnChartArea:false}}
       }
     }
   });
 }
 
-// userStorageTB index=3, filesB index=1, dbStorageTB index=2
-makeScatter(
-  'chartScatterUser',
-  1, 3,
-  'File Count (billions)',
-  'User Storage (cumul. TB M)',
-  'rgba(52,211,153,0.55)'
-);
-makeScatter(
-  'chartScatterDb',
-  1, 2,
-  'File Count (billions)',
-  'DB Storage (cumul. TB)',
-  'rgba(96,165,250,0.55)'
-);
-
-// ─── DB CORES DATA ────────────────────────────────────────────────────────────
-const SEGMENT_CORR = [
-  { seg: 'Viral & Other',    r: 0.62,  farms: 615, avgDauM: 12.96, coresPerMDau: 486848 },
-  { seg: 'Charity',          r: 0.58,  farms: 604, avgDauM:  2.38, coresPerMDau: 2709925 },
-  { seg: 'SM&C Corporate',   r: 0.52,  farms: 600, avgDauM:  4.96, coresPerMDau: 732798 },
-  { seg: 'SM&C Commercial',  r: 0.50,  farms: 612, avgDauM: 12.04, coresPerMDau: 364451 },
-  { seg: 'Education',        r: 0.48,  farms: 621, avgDauM: 19.95, coresPerMDau: 317303 },
-  { seg: 'Unknown',          r: 0.33,  farms: 570, avgDauM:  0.02, coresPerMDau: null },
-  { seg: 'Enterprise',       r: 0.22,  farms: 610, avgDauM: 40.44, coresPerMDau: 158149 },
-  { seg: 'Government',       r: -0.10, farms: 624, avgDauM:  5.70, coresPerMDau: 1102309 }
-];
-
-// [quintile, avgDauM, maxCoresPerMDau]
-const QUINTILE = [
-  [1, 24.90,  808239],
-  [2, 67.17,  556657],
-  [3, 92.96,  475856],
-  [4, 120.57, 436916],
-  [5, 173.33, 366569]
-];
-
-// All signals vs MaxDbCores (sorted best → worst)
-const SIGNAL_RANKING = [
-  { label: 'All DAU (farm-level)',    r: 0.52, color: '#3b82f6' },
-  { label: 'Consumer DUU (date)',     r: 0.50, color: '#34d399' },
-  { label: 'Total DUU (date)',        r: 0.33, color: '#a78bfa' },
-  { label: 'All DAU (date-level)',    r: 0.33, color: '#60a5fa' },
-  { label: 'Enterprise DUU (date)',   r: 0.28, color: '#f87171' },
-  { label: 'Enterprise DAU (farm)',   r: 0.23, color: '#fb923c' }
-];
-
-// ─── CHART: Segment Correlation ───────────────────────────────────────────────
+// ─── S1: Distribution ────────────────────────────────────────────────────────
 {
-  const sorted = [...SEGMENT_CORR].sort((a, b) => b.r - a.r);
-  new Chart(document.getElementById('chartSegmentCorr'), {
-    type: 'bar',
-    data: {
-      labels: sorted.map(d => d.seg),
-      datasets: [{
-        label: 'Pearson r (DAU vs MaxDbCores)',
-        data: sorted.map(d => d.r),
-        backgroundColor: sorted.map(d =>
-          d.r >= 0.5  ? 'rgba(52,211,153,0.75)' :
-          d.r >= 0.3  ? 'rgba(251,191,36,0.75)' :
-          d.r >= 0    ? 'rgba(251,146,60,0.75)' :
-                        'rgba(248,113,113,0.75)'
-        ),
-        borderRadius: 4
-      }]
+  const wd=[], we=[];
+  TS.forEach(r=>{
+    const d=new Date(r[0]); const dow=d.getDay();
+    (dow===0||dow===6?we:wd).push(r[3]);
+  });
+  const buckets=['<4%','4–5%','5–6%','6–7%','7–7.5%','7.5–8%','8–8.5%','>8.5%'];
+  const bk=v=> v<4?0:v<5?1:v<6?2:v<7?3:v<7.5?4:v<8?5:v<8.5?6:7;
+  const wdC=Array(8).fill(0), weC=Array(8).fill(0);
+  wd.forEach(v=>wdC[bk(v)]++);
+  we.forEach(v=>weC[bk(v)]++);
+  new Chart(document.getElementById('c1_dist'), {
+    type:'bar',
+    data:{
+      labels:buckets,
+      datasets:[
+        {label:'Weekday',data:wdC,backgroundColor:'rgba(52,211,153,0.7)',borderRadius:3},
+        {label:'Weekend',data:weC,backgroundColor:'rgba(251,191,36,0.6)',borderRadius:3}
+      ]
     },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` r = ${ctx.parsed.x.toFixed(2)}  ·  avg DAU: ${SEGMENT_CORR.find(d=>d.seg===ctx.label)?.avgDauM.toFixed(1)}M`
-          }
-        }
-      },
-      scales: {
-        x: {
-          min: -0.2, max: 0.75,
-          title: { display: true, text: 'Pearson r' },
-          grid: { color: '#1e293b' },
-          ticks: { callback: v => v.toFixed(1) }
-        },
-        y: { grid: { color: '#1e293b' } }
+    options:{
+      responsive:true,
+      plugins:{legend:{position:'top',labels:{boxWidth:10,padding:12}}},
+      scales:{
+        x:{grid:{color:'#1e293b'}},
+        y:{title:{display:true,text:'Days'},grid:{color:'#1e293b'}}
       }
     }
   });
 }
 
-// ─── CHART: Scale Efficiency Quintile ─────────────────────────────────────────
+// ─── S2: Signal ranking ───────────────────────────────────────────────────────
+new Chart(document.getElementById('c2_ranking'), {
+  type:'bar',
+  data:{
+    labels:SIGS.map(s=>s[0]),
+    datasets:[{
+      label:'r vs MaxDbCores',
+      data:SIGS.map(s=>s[1]),
+      backgroundColor:SIGS.map(s=>s[2]+'bf'),
+      borderRadius:4
+    }]
+  },
+  options:{
+    indexAxis:'y', responsive:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` r = ${ctx.parsed.x.toFixed(2)}`}}},
+    scales:{
+      x:{min:0,max:0.65,title:{display:true,text:'Pearson r vs MaxDbCores'},grid:{color:'#1e293b'},ticks:{callback:v=>v.toFixed(2)}},
+      y:{grid:{color:'#1e293b'}}
+    }
+  }
+});
+
+// ─── S2: Segment ─────────────────────────────────────────────────────────────
 {
-  new Chart(document.getElementById('chartQuintile'), {
-    type: 'bar',
-    data: {
-      labels: QUINTILE.map(q => `Q${q[0]} (${q[1]}M DAU)`),
-      datasets: [{
-        label: 'MaxCores per M DAU',
-        data: QUINTILE.map(q => q[2]),
-        backgroundColor: [
-          'rgba(248,113,113,0.75)',
-          'rgba(251,146,60,0.75)',
-          'rgba(251,191,36,0.75)',
-          'rgba(52,211,153,0.65)',
-          'rgba(52,211,153,0.85)'
-        ],
-        borderRadius: 4
+  const sorted=[...SEG].sort((a,b)=>b[1]-a[1]);
+  new Chart(document.getElementById('c2_segment'), {
+    type:'bar',
+    data:{
+      labels:sorted.map(s=>s[0]),
+      datasets:[{
+        label:'r (DAU vs MaxDbCores)',
+        data:sorted.map(s=>s[1]),
+        backgroundColor:sorted.map(s=> s[1]>=0.5?'rgba(52,211,153,0.75)':s[1]>=0.3?'rgba(251,191,36,0.75)':s[1]>=0?'rgba(251,146,60,0.75)':'rgba(248,113,113,0.75)'),
+        borderRadius:4
       }]
     },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.parsed.y.toLocaleString()} max cores per M DAU`
-          }
-        }
-      },
-      scales: {
-        x: { grid: { color: '#1e293b' } },
-        y: {
-          title: { display: true, text: 'MaxCores per M DAU' },
-          grid: { color: '#1e293b' },
-          ticks: { callback: v => (v/1000).toFixed(0)+'K' }
-        }
+    options:{
+      indexAxis:'y', responsive:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` r = ${ctx.parsed.x.toFixed(2)}  ·  avg DAU: ${sorted[ctx.dataIndex][3].toFixed(1)}M  ·  ${sorted[ctx.dataIndex][2]} farms`}}},
+      scales:{
+        x:{min:-0.2,max:0.75,title:{display:true,text:'Pearson r'},grid:{color:'#1e293b'},ticks:{callback:v=>v.toFixed(1)}},
+        y:{grid:{color:'#1e293b'}}
       }
     }
   });
 }
 
-// ─── CHART: Signal Ranking ────────────────────────────────────────────────────
+// ─── S2: Quintile ────────────────────────────────────────────────────────────
+new Chart(document.getElementById('c2_quintile'), {
+  type:'bar',
+  data:{
+    labels:QUIN.map(q=>`Q${q[0]}\n${q[1]}M DAU`),
+    datasets:[{
+      label:'MaxCores per M DAU',
+      data:QUIN.map(q=>q[2]),
+      backgroundColor:['rgba(248,113,113,0.8)','rgba(251,146,60,0.8)','rgba(251,191,36,0.8)','rgba(74,222,128,0.7)','rgba(52,211,153,0.85)'],
+      borderRadius:4
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y.toLocaleString()} max cores per M DAU`}}},
+    scales:{
+      x:{grid:{color:'#1e293b'}},
+      y:{title:{display:true,text:'MaxCores / M DAU'},grid:{color:'#1e293b'},ticks:{callback:v=>(v/1000).toFixed(0)+'K'}}
+    }
+  }
+});
+
+// ─── S2: Segment size ────────────────────────────────────────────────────────
 {
-  new Chart(document.getElementById('chartSignalRanking'), {
-    type: 'bar',
-    data: {
-      labels: SIGNAL_RANKING.map(d => d.label),
-      datasets: [{
-        label: 'r vs MaxDbCores',
-        data: SIGNAL_RANKING.map(d => d.r),
-        backgroundColor: SIGNAL_RANKING.map(d => d.color + 'bf'),
-        borderRadius: 4
-      }]
+  const sorted=[...SEG].filter(s=>s[0]!=='Unknown').sort((a,b)=>b[3]-a[3]);
+  new Chart(document.getElementById('c2_segsize'), {
+    type:'bar',
+    data:{
+      labels:sorted.map(s=>s[0]),
+      datasets:[
+        {label:'Avg DAU per farm (M)',data:sorted.map(s=>s[3]),backgroundColor:'rgba(96,165,250,0.7)',borderRadius:3,yAxisID:'yL'},
+        {label:'r vs MaxDbCores',data:sorted.map(s=>s[1]),backgroundColor:'rgba(52,211,153,0.6)',borderRadius:3,yAxisID:'yR',type:'line',borderColor:'#34d399',pointBackgroundColor:'#34d399',pointRadius:4,fill:false}
+      ]
     },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: { label: ctx => ` r = ${ctx.parsed.x.toFixed(2)}` }
-        }
-      },
-      scales: {
-        x: {
-          min: 0, max: 0.65,
-          title: { display: true, text: 'Pearson r vs MaxDbCores' },
-          grid: { color: '#1e293b' },
-          ticks: { callback: v => v.toFixed(2) }
-        },
-        y: { grid: { color: '#1e293b' } }
+    options:{
+      responsive:true, interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top',labels:{boxWidth:10,padding:12}}},
+      scales:{
+        x:{ticks:{maxRotation:25},grid:{color:'#1e293b'}},
+        yL:{type:'linear',position:'left',title:{display:true,text:'Avg DAU (M)',color:'#60a5fa'},grid:{color:'#1e293b'}},
+        yR:{type:'linear',position:'right',min:-0.2,max:0.8,title:{display:true,text:'Pearson r',color:'#34d399'},grid:{drawOnChartArea:false}}
+      }
+    }
+  });
+}
+
+// ─── S2: DUU breakdown ───────────────────────────────────────────────────────
+new Chart(document.getElementById('c2_duu_seg'), {
+  type:'bar',
+  data:{
+    labels:DUU_SIGS.map(s=>s[0]),
+    datasets:[{
+      label:'r vs MaxDbCores',
+      data:DUU_SIGS.map(s=>s[1]),
+      backgroundColor:DUU_SIGS.map(s=>s[2]+'bf'),
+      borderRadius:6
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>` r = ${ctx.parsed.y.toFixed(2)}`}},
+      annotation:{annotations:{}}
+    },
+    scales:{
+      x:{grid:{color:'#1e293b'}},
+      y:{min:0,max:0.65,title:{display:true,text:'Pearson r vs MaxDbCores'},grid:{color:'#1e293b'},ticks:{callback:v=>v.toFixed(2)}}
+    }
+  }
+});
+
+// ─── S3 & S4: Scatter helper ─────────────────────────────────────────────────
+function scatter(id, xIdx, yIdx, xLabel, yLabel, color) {
+  const pts = SCATTER.map(r=>({x:r[xIdx]/1000, y:r[yIdx]/1e6, label:r[0]}));
+  new Chart(document.getElementById(id), {
+    type:'scatter',
+    data:{datasets:[{label:'Farm',data:pts,backgroundColor:color,pointRadius:3,pointHoverRadius:5}]},
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw.label}  files: ${ctx.parsed.x.toFixed(0)}B · ${yLabel}: ${ctx.parsed.y.toFixed(2)}M`}}},
+      scales:{
+        x:{title:{display:true,text:xLabel},grid:{color:'#1e293b'}},
+        y:{title:{display:true,text:yLabel},grid:{color:'#1e293b'}}
+      }
+    }
+  });
+}
+
+scatter('c3_scatter', 1, 2, 'File Count (billions)', 'DB Storage (cumul. TB, M)', 'rgba(96,165,250,0.5)');
+scatter('c4_scatter', 1, 3, 'File Count (billions)', 'User Storage (cumul. TB, M)', 'rgba(52,211,153,0.5)');
+
+// ─── S4: Predictor comparison ────────────────────────────────────────────────
+new Chart(document.getElementById('c4_compare'), {
+  type:'bar',
+  data:{
+    labels:['Files → User Storage\nr = 0.93','Files → DB Storage\nr = 0.87'],
+    datasets:[
+      {label:'Pearson r',data:[0.93,0.87],backgroundColor:['rgba(52,211,153,0.8)','rgba(96,165,250,0.8)'],borderRadius:6},
+      {label:'R²',data:[0.871,0.757],backgroundColor:['rgba(52,211,153,0.4)','rgba(96,165,250,0.4)'],borderRadius:6}
+    ]
+  },
+  options:{
+    responsive:true,
+    plugins:{legend:{position:'top',labels:{boxWidth:10,padding:12}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(3)}`}}},
+    scales:{
+      x:{grid:{color:'#1e293b'}},
+      y:{min:0.5,max:1.0,title:{display:true,text:'Value'},grid:{color:'#1e293b'},ticks:{callback:v=>v.toFixed(2)}}
+    }
+  }
+});
+
+// ─── S4: Top 20 farms ────────────────────────────────────────────────────────
+{
+  const top20 = SCATTER.slice(0,20);
+  new Chart(document.getElementById('c4_top20'), {
+    type:'bar',
+    data:{
+      labels:top20.map(r=>r[0].replace('_Content','')),
+      datasets:[
+        {label:'User Storage (TB M)',data:top20.map(r=>r[3]/1e6),backgroundColor:'rgba(52,211,153,0.7)',borderRadius:2},
+        {label:'DB Storage (TB)',data:top20.map(r=>r[2]/1e6),backgroundColor:'rgba(96,165,250,0.6)',borderRadius:2}
+      ]
+    },
+    options:{
+      responsive:true, interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top',labels:{boxWidth:10,padding:10}}},
+      scales:{
+        x:{ticks:{maxRotation:45,font:{size:9}},grid:{color:'#1e293b'}},
+        y:{title:{display:true,text:'Storage (M)'},grid:{color:'#1e293b'}}
       }
     }
   });
