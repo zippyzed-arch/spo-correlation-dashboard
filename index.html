@@ -192,6 +192,133 @@
     </table>
   </div>
 
+
+  <!-- ── DB CORES SECTION ─────────────────────────────────────────────────── -->
+  <div class="section-title" style="margin-top:14px">DB Core Capacity (MaxDbCores) vs User Signals</div>
+  <div class="cards">
+    <div class="card blue">
+      <div class="label">Best Predictor → MaxDbCores</div>
+      <div class="value">r = 0.52</div>
+      <div class="sub">All-segment DAU · farm-level</div>
+    </div>
+    <div class="card green">
+      <div class="label">Consumer DUU → MaxDbCores</div>
+      <div class="value">r = 0.50</div>
+      <div class="sub">Date-level · 2nd best signal</div>
+    </div>
+    <div class="card amber">
+      <div class="label">Total DUU → MaxDbCores</div>
+      <div class="value">r = 0.33</div>
+      <div class="sub">Diluted by Enterprise volume</div>
+    </div>
+    <div class="card rose">
+      <div class="label">Enterprise DAU → MaxDbCores</div>
+      <div class="value">r = 0.23</div>
+      <div class="sub">Weakest — SLA-driven provisioning</div>
+    </div>
+    <div class="card rose">
+      <div class="label">Enterprise DUU → MaxDbCores</div>
+      <div class="value">r = 0.28</div>
+      <div class="sub">Enterprise = 72.6% of DUU volume</div>
+    </div>
+    <div class="card purple">
+      <div class="label">Scale Efficiency Gain</div>
+      <div class="value">−55%</div>
+      <div class="sub">MaxCores/M DAU: Q5 vs Q1 farms</div>
+    </div>
+  </div>
+
+  <div class="charts-2col">
+    <div class="chart-panel">
+      <h3>DAU vs MaxDbCores — Correlation by Customer Segment</h3>
+      <canvas id="chartSegmentCorr" height="220"></canvas>
+      <div class="insight">
+        <strong>Government (r = −0.10)</strong> and <strong>Enterprise (r = 0.22)</strong> are provisioned to compliance and SLA requirements — DAU is irrelevant to their capacity.
+        <strong>Viral &amp; Other (r = 0.62)</strong> and <strong>Charity (r = 0.58)</strong> show the strongest signal because their farms were sized closer to observed demand.
+      </div>
+    </div>
+    <div class="chart-panel">
+      <h3>Scale Efficiency — MaxCores per M DAU by Farm Size Quintile</h3>
+      <canvas id="chartQuintile" height="220"></canvas>
+      <div class="insight">
+        Every quintile step roughly halves the cores-per-user ratio — a consistent <strong>sub-linear scaling</strong> pattern across all segments.
+        Largest farms (Q5, avg 173M DAU) are provisioned with <strong>55% fewer max cores per million users</strong> than the smallest farms (Q1, avg 25M DAU).
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-1col">
+    <div class="chart-panel">
+      <h3>All Signals vs MaxDbCores — Ranked by Correlation Strength</h3>
+      <canvas id="chartSignalRanking" height="75"></canvas>
+      <div class="insight">
+        <strong>Consumer DUU and total farm-level DAU are equally strong</strong> at r ≈ 0.50–0.52.
+        Isolating Enterprise — whether via DAU or DUU — <em>hurts</em> the correlation despite Enterprise being the dominant volume segment (~40% of DAU, ~73% of DUU).
+        Enterprise capacity is decoupled from usage: it's driven by contracts, compliance, and peak-headroom buffers, not actual user activity.
+      </div>
+    </div>
+  </div>
+
+  <!-- Updated methodology -->
+  <div class="section-title">Updated Methodology — DB Cores Analysis</div>
+  <div class="chart-panel" style="margin-bottom:28px">
+    <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+      <thead>
+        <tr style="border-bottom:1px solid #334155; color:#64748b; text-align:left;">
+          <th style="padding:8px 12px;">Signal</th>
+          <th style="padding:8px 12px;">Granularity</th>
+          <th style="padding:8px 12px;">vs DbCores r</th>
+          <th style="padding:8px 12px;">vs MaxDbCores r</th>
+          <th style="padding:8px 12px;">Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #1e293b; background:#161b2e">
+          <td style="padding:8px 12px; color:#e2e8f0;">All-segment DAU</td>
+          <td style="padding:8px 12px; color:#94a3b8;">Farm-level</td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.51</span></td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.52</span></td>
+          <td style="padding:8px 12px; color:#94a3b8;">Best overall predictor</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1e293b;">
+          <td style="padding:8px 12px; color:#e2e8f0;">Consumer DUU</td>
+          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
+          <td style="padding:8px 12px; color:#64748b;">—</td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.50</span></td>
+          <td style="padding:8px 12px; color:#94a3b8;">Elastic demand signal — nearly matches farm DAU</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1e293b; background:#161b2e">
+          <td style="padding:8px 12px; color:#e2e8f0;">Total DUU</td>
+          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.36</span></td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.33</span></td>
+          <td style="padding:8px 12px; color:#94a3b8;">Diluted by Enterprise's 72.6% volume share</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1e293b;">
+          <td style="padding:8px 12px; color:#e2e8f0;">All-segment DAU</td>
+          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.33</span></td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate">0.33</span></td>
+          <td style="padding:8px 12px; color:#94a3b8;">MaxDbCores is stable — low date-level variance</td>
+        </tr>
+        <tr style="border-bottom:1px solid #1e293b; background:#161b2e">
+          <td style="padding:8px 12px; color:#e2e8f0;">Enterprise DUU</td>
+          <td style="padding:8px 12px; color:#94a3b8;">Date-level</td>
+          <td style="padding:8px 12px; color:#64748b;">—</td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate" style="background:#1a0a0a;color:#f87171">0.28</span></td>
+          <td style="padding:8px 12px; color:#94a3b8;">SLA-provisioned — usage doesn't drive capacity</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; color:#e2e8f0;">Enterprise DAU</td>
+          <td style="padding:8px 12px; color:#94a3b8;">Farm-level</td>
+          <td style="padding:8px 12px; color:#64748b;">—</td>
+          <td style="padding:8px 12px;"><span class="r-badge r-moderate" style="background:#1a0a0a;color:#f87171">0.23</span></td>
+          <td style="padding:8px 12px; color:#94a3b8;">Weakest — isolating Enterprise makes it worse</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div><!-- /page -->
 
 <script>
@@ -406,6 +533,156 @@ makeScatter(
   'DB Storage (cumul. TB)',
   'rgba(96,165,250,0.55)'
 );
+
+// ─── DB CORES DATA ────────────────────────────────────────────────────────────
+const SEGMENT_CORR = [
+  { seg: 'Viral & Other',    r: 0.62,  farms: 615, avgDauM: 12.96, coresPerMDau: 486848 },
+  { seg: 'Charity',          r: 0.58,  farms: 604, avgDauM:  2.38, coresPerMDau: 2709925 },
+  { seg: 'SM&C Corporate',   r: 0.52,  farms: 600, avgDauM:  4.96, coresPerMDau: 732798 },
+  { seg: 'SM&C Commercial',  r: 0.50,  farms: 612, avgDauM: 12.04, coresPerMDau: 364451 },
+  { seg: 'Education',        r: 0.48,  farms: 621, avgDauM: 19.95, coresPerMDau: 317303 },
+  { seg: 'Unknown',          r: 0.33,  farms: 570, avgDauM:  0.02, coresPerMDau: null },
+  { seg: 'Enterprise',       r: 0.22,  farms: 610, avgDauM: 40.44, coresPerMDau: 158149 },
+  { seg: 'Government',       r: -0.10, farms: 624, avgDauM:  5.70, coresPerMDau: 1102309 }
+];
+
+// [quintile, avgDauM, maxCoresPerMDau]
+const QUINTILE = [
+  [1, 24.90,  808239],
+  [2, 67.17,  556657],
+  [3, 92.96,  475856],
+  [4, 120.57, 436916],
+  [5, 173.33, 366569]
+];
+
+// All signals vs MaxDbCores (sorted best → worst)
+const SIGNAL_RANKING = [
+  { label: 'All DAU (farm-level)',    r: 0.52, color: '#3b82f6' },
+  { label: 'Consumer DUU (date)',     r: 0.50, color: '#34d399' },
+  { label: 'Total DUU (date)',        r: 0.33, color: '#a78bfa' },
+  { label: 'All DAU (date-level)',    r: 0.33, color: '#60a5fa' },
+  { label: 'Enterprise DUU (date)',   r: 0.28, color: '#f87171' },
+  { label: 'Enterprise DAU (farm)',   r: 0.23, color: '#fb923c' }
+];
+
+// ─── CHART: Segment Correlation ───────────────────────────────────────────────
+{
+  const sorted = [...SEGMENT_CORR].sort((a, b) => b.r - a.r);
+  new Chart(document.getElementById('chartSegmentCorr'), {
+    type: 'bar',
+    data: {
+      labels: sorted.map(d => d.seg),
+      datasets: [{
+        label: 'Pearson r (DAU vs MaxDbCores)',
+        data: sorted.map(d => d.r),
+        backgroundColor: sorted.map(d =>
+          d.r >= 0.5  ? 'rgba(52,211,153,0.75)' :
+          d.r >= 0.3  ? 'rgba(251,191,36,0.75)' :
+          d.r >= 0    ? 'rgba(251,146,60,0.75)' :
+                        'rgba(248,113,113,0.75)'
+        ),
+        borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` r = ${ctx.parsed.x.toFixed(2)}  ·  avg DAU: ${SEGMENT_CORR.find(d=>d.seg===ctx.label)?.avgDauM.toFixed(1)}M`
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: -0.2, max: 0.75,
+          title: { display: true, text: 'Pearson r' },
+          grid: { color: '#1e293b' },
+          ticks: { callback: v => v.toFixed(1) }
+        },
+        y: { grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+
+// ─── CHART: Scale Efficiency Quintile ─────────────────────────────────────────
+{
+  new Chart(document.getElementById('chartQuintile'), {
+    type: 'bar',
+    data: {
+      labels: QUINTILE.map(q => `Q${q[0]} (${q[1]}M DAU)`),
+      datasets: [{
+        label: 'MaxCores per M DAU',
+        data: QUINTILE.map(q => q[2]),
+        backgroundColor: [
+          'rgba(248,113,113,0.75)',
+          'rgba(251,146,60,0.75)',
+          'rgba(251,191,36,0.75)',
+          'rgba(52,211,153,0.65)',
+          'rgba(52,211,153,0.85)'
+        ],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y.toLocaleString()} max cores per M DAU`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: '#1e293b' } },
+        y: {
+          title: { display: true, text: 'MaxCores per M DAU' },
+          grid: { color: '#1e293b' },
+          ticks: { callback: v => (v/1000).toFixed(0)+'K' }
+        }
+      }
+    }
+  });
+}
+
+// ─── CHART: Signal Ranking ────────────────────────────────────────────────────
+{
+  new Chart(document.getElementById('chartSignalRanking'), {
+    type: 'bar',
+    data: {
+      labels: SIGNAL_RANKING.map(d => d.label),
+      datasets: [{
+        label: 'r vs MaxDbCores',
+        data: SIGNAL_RANKING.map(d => d.r),
+        backgroundColor: SIGNAL_RANKING.map(d => d.color + 'bf'),
+        borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ` r = ${ctx.parsed.x.toFixed(2)}` }
+        }
+      },
+      scales: {
+        x: {
+          min: 0, max: 0.65,
+          title: { display: true, text: 'Pearson r vs MaxDbCores' },
+          grid: { color: '#1e293b' },
+          ticks: { callback: v => v.toFixed(2) }
+        },
+        y: { grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
 </script>
 </body>
 </html>
